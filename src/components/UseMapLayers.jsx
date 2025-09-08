@@ -54,10 +54,19 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
   // ----------------------------
   // Add/remove OL layers
   // ----------------------------
-  const addMapLayer = (mapInstance, groupId, layerId, isActive, type = "wms", styleId = "") => {
+  const addMapLayer = (
+    mapInstance,
+    groupId,
+    layerId,
+    isActive,
+    type = "wms",
+    styleId = ""
+  ) => {
     if (!mapInstance) return;
 
-    const key = styleId ? `${groupId}:${layerId}:${styleId}` : `${groupId}:${layerId}`;
+    const key = styleId
+      ? `${groupId}:${layerId}:${styleId}`
+      : `${groupId}:${layerId}`;
     const dataset = DATASET_CONFIG[groupId];
     if (!dataset) {
       console.error(`No dataset config found for groupId: ${groupId}`);
@@ -107,68 +116,119 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
   // ----------------------------
   // Toggle layer active
   // ----------------------------
-const setLayerActive = (mapInstance, groupId, layerId, inputType = "checkbox") => {
-  setDataLayers((prev) =>
-    prev.map((group) => {
-      if (group.id !== groupId) return group;
+  const setLayerActive = (
+    mapInstance,
+    groupId,
+    layerId,
+    inputType = "checkbox"
+  ) => {
+    setDataLayers((prev) =>
+      prev.map((group) => {
+        if (group.id !== groupId) return group;
 
-      const updatedChildren = group.children.map((parent) => {
-        // ---- Parent checkbox toggle ----
-        if (inputType === "checkbox" && parent.id === layerId) {
-          const newActive = !parent.active;
+        const updatedChildren = group.children.map((parent) => {
+          // ---- Parent checkbox toggle ----
+          if (inputType === "checkbox" && parent.id === layerId) {
+            const newActive = !parent.active;
 
-          // get radio children
-          const radios = parent.children.filter((c) => c.inputType === "radio");
+            // get radio children
+            const radios = parent.children.filter(
+              (c) => c.inputType === "radio"
+            );
 
-          if (radios.length > 1) {
-            // ---- Only run radio logic if there are 2 or more radios ----
+            if (radios.length > 1) {
+              // ---- Only run radio logic if there are 2 or more radios ----
 
-            // remove any active style layers for this parent
-            radios.forEach((r) => addMapLayer(mapInstance, groupId, parent.id, false, parent.type, r.id));
-
-            if (newActive) {
-              // pick an active radio if exists, else first
-              let activeRadio = radios.find((c) => c.active) || radios[0];
-
-              // add parent layer with chosen style
-              addMapLayer(mapInstance, groupId, parent.id, true, parent.type, activeRadio.id);
-
-              const updatedChilds = parent.children.map((c) =>
-                c.inputType === "radio" ? { ...c, active: c.id === activeRadio.id } : { ...c }
+              // remove any active style layers for this parent
+              radios.forEach((r) =>
+                addMapLayer(
+                  mapInstance,
+                  groupId,
+                  parent.id,
+                  false,
+                  parent.type,
+                  r.id
+                )
               );
 
-              return { ...parent, active: newActive, children: updatedChilds };
+              if (newActive) {
+                // pick an active radio if exists, else first
+                let activeRadio = radios.find((c) => c.active) || radios[0];
+
+                // add parent layer with chosen style
+                addMapLayer(
+                  mapInstance,
+                  groupId,
+                  parent.id,
+                  true,
+                  parent.type,
+                  activeRadio.id
+                );
+
+                const updatedChilds = parent.children.map((c) =>
+                  c.inputType === "radio"
+                    ? { ...c, active: c.id === activeRadio.id }
+                    : { ...c }
+                );
+
+                return {
+                  ...parent,
+                  active: newActive,
+                  children: updatedChilds,
+                };
+              } else {
+                // parent deactivated -> remove all radio selections
+                const updatedChilds = parent.children.map((c) => ({
+                  ...c,
+                  active: false,
+                }));
+                return {
+                  ...parent,
+                  active: newActive,
+                  children: updatedChilds,
+                };
+              }
             } else {
-              // parent deactivated -> remove all radio selections
-              const updatedChilds = parent.children.map((c) => ({ ...c, active: false }));
-              return { ...parent, active: newActive, children: updatedChilds };
+              // ---- Parent has 0 or 1 radio child ----
+              addMapLayer(
+                mapInstance,
+                groupId,
+                parent.id,
+                newActive,
+                parent.type
+              );
+              return { ...parent, active: newActive };
             }
-          } else {
-            // ---- Parent has 0 or 1 radio child ----
-            addMapLayer(mapInstance, groupId, parent.id, newActive, parent.type);
-            return { ...parent, active: newActive };
           }
-        }
 
-        // ---- Radio button toggle ----
-        if (inputType === "radio" && parent.children.some((c) => c.id === layerId)) {
-          const updatedChilds = parent.children.map((child) => {
-            if (child.inputType !== "radio") return child;
-            const shouldActivate = child.id === layerId;
-            addMapLayer(mapInstance, groupId, parent.id, shouldActivate, parent.type, child.id);
-            return { ...child, active: shouldActivate };
-          });
-          return { ...parent, children: updatedChilds };
-        }
+          // ---- Radio button toggle ----
+          if (
+            inputType === "radio" &&
+            parent.children.some((c) => c.id === layerId)
+          ) {
+            const updatedChilds = parent.children.map((child) => {
+              if (child.inputType !== "radio") return child;
+              const shouldActivate = child.id === layerId;
+              addMapLayer(
+                mapInstance,
+                groupId,
+                parent.id,
+                shouldActivate,
+                parent.type,
+                child.id
+              );
+              return { ...child, active: shouldActivate };
+            });
+            return { ...parent, children: updatedChilds };
+          }
 
-        return parent;
-      });
+          return parent;
+        });
 
-      return { ...group, children: updatedChildren };
-    })
-  );
-};
-
+        return { ...group, children: updatedChildren };
+      })
+    );
+  };
 
   // ----------------------------
   // Set layer opacity
@@ -187,7 +247,9 @@ const setLayerActive = (mapInstance, groupId, layerId, inputType = "checkbox") =
 
     setDataLayers((prev) =>
       prev.map((group) =>
-        group.id === groupId ? { ...group, children: updateOpacityRecursive(group.children) } : group
+        group.id === groupId
+          ? { ...group, children: updateOpacityRecursive(group.children) }
+          : group
       )
     );
   };

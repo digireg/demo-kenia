@@ -18,7 +18,6 @@ import { ScaleLine, Attribution } from "ol/control";
 import useMeasurementTool from "./MeasurementTools";
 import Measurement from "./MeasurementContainer";
 
-
 import SearchBar from "./Searchbar";
 import ZoomControl from "./ZoomControl";
 import Legend from "./Legend";
@@ -136,7 +135,11 @@ function createBaseLayer(projectionCode, backgroundId) {
           preload: Infinity,
         });
       default:
-        return new TileLayer({ source: new OSM(), zIndex: 0, preload: Infinity });
+        return new TileLayer({
+          source: new OSM(),
+          zIndex: 0,
+          preload: Infinity,
+        });
     }
   }
 
@@ -160,32 +163,35 @@ function createBaseLayer(projectionCode, backgroundId) {
           preload: Infinity,
         });
 
-case "mombasa":
-  return new TileLayer({
-    source: new TileWMS({
-      url: "https://services.digireg.com/wms/test/mombasa-ortho/ows?",
-      params: {
-        LAYERS: "ortho:mombasa2019",
-        FORMAT: "image/png",
-        TILED: true,
-        CRS: "EPSG:4326",
-      },
-      serverType: "geoserver",
-      version: "1.3.0",  // ensure correct WMS version
-      crossOrigin: "anonymous",
-    }),
-    zIndex: 0,
-  });
+      case "mombasa":
+        return new TileLayer({
+          source: new TileWMS({
+            url: "https://services.digireg.com/wms/test/mombasa-ortho/ows?",
+            params: {
+              LAYERS: "ortho:mombasa2019",
+              FORMAT: "image/png",
+              TILED: true,
+              CRS: "EPSG:4326",
+            },
+            serverType: "mapserver",
+            version: "1.3.0", // ensure correct WMS version
+            crossOrigin: "anonymous",
+          }),
+          zIndex: 0,
+        });
 
       default:
-        return new TileLayer({ source: new OSM(), zIndex: 0, preload: Infinity });
+        return new TileLayer({
+          source: new OSM(),
+          zIndex: 0,
+          preload: Infinity,
+        });
     }
   }
 
   // fallback (just in case)
   return new TileLayer({ source: new OSM(), zIndex: 0, preload: Infinity });
 }
-
 
 // ----------------------------
 // Inside NL check
@@ -306,7 +312,7 @@ export default function OLMap({
         LAYERS: "pand,verblijfsobject,ligplaats,standplaats,woonplaats",
         TILED: true,
       },
-      serverType: "geoserver",
+      serverType: "mapserver",
       crossOrigin: "anonymous",
     })
   );
@@ -334,28 +340,45 @@ export default function OLMap({
     new TileWMS({
       url: "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0",
       params: { TILED: true },
-      serverType: "geoserver",
+      serverType: "mapserver",
       crossOrigin: "anonymous",
     })
   );
 
-
-    // ----------------------------
+  // ----------------------------
   // Mombasa source
   // ----------------------------
 
-const MombasaSourceRef = useRef(
-  new TileWMS({
-    url: "http://services.digireg.com/wms/test/mombasa/ows?",
-    params: {
-      LAYERS: "test_mombasa:Barriers,test_mombasa:Bridges,test_mombasa:Buildings,test_mombasa:Civil Engineering Structures,test_mombasa:Greenery,test_mombasa:Open Terrain,test_mombasa:Other Structures,test_mombasa:Roads and Paths,test_mombasa:Roadside,test_mombasa:Shore,test_mombasa:Water",
-      TILED: true,
-      FORMAT: "image/png",
-    },
-    serverType: "geoserver",
-    crossOrigin: "anonymous",
-  })
-);
+  const MombasaSourceRef = useRef(
+    new TileWMS({
+      url: "http://services.digireg.com/wms/test/mombasa/ows?",
+      params: {
+        LAYERS:
+          "test_mombasa:Barriers,test_mombasa:Bridges,test_mombasa:Buildings,test_mombasa:Civil Engineering Structures,test_mombasa:Greenery,test_mombasa:Open Terrain,test_mombasa:Other Structures,test_mombasa:Roads and Paths,test_mombasa:Roadside,test_mombasa:Shore,test_mombasa:Water",
+        TILED: true,
+        FORMAT: "image/png",
+      },
+      serverType: "mapserver",
+      crossOrigin: "anonymous",
+    })
+  );
+
+  // ----------------------------
+  // Mbale source
+  // ----------------------------
+
+  const MbaleSourceRef = useRef(
+    new TileWMS({
+      url: "https://services.digireg.com/mapserver/mbale",
+      params: {
+        LAYERS: "vihaga", // MapServer layer name (check case sensitivity!)
+        TILED: true,
+        TRANSPARENT: true,
+      },
+      serverType: "mapserver",
+      crossOrigin: "anonymous",
+    })
+  );
 
   // ----------------------------
   // WMTS GetFeatureInfo helper for BGT
@@ -449,10 +472,60 @@ const MombasaSourceRef = useRef(
     );
     map.addControl(new Attribution({ collapsible: true }));
 
+    // ----------------------------
+    // Helper: fetch feature info safely
+    // ----------------------------
+    async function fetchFeatureInfo(
+      source,
+      coordinate,
+      resolution,
+      projectionCode,
+      layerId
+    ) {
+      if (!source) return null;
+
+      // Build the URL
+      const url = source.getFeatureInfoUrl(
+        coordinate,
+        resolution,
+        projectionCode,
+        {
+          INFO_FORMAT: "application/json",
+          QUERY_LAYERS: layerId,
+          FEATURE_COUNT: 10,
+        }
+      );
+
+      if (!url) return null;
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return null;
+
+        const contentType = res.headers.get("Content-Type") || "";
+        if (contentType.includes("application/json")) {
+          const geojson = await res.json();
+          if (!geojson?.features?.length) return null;
+
+          const format = new GeoJSON();
+          return format.readFeatures(geojson, {
+            featureProjection: mapInstance.current.getView().getProjection(),
+          });
+        } else if (contentType.includes("image")) {
+          console.warn(`${layerId} returned image instead of JSON`);
+          return null;
+        } else {
+          console.warn(`${layerId} unknown response type:`, contentType);
+          return null;
+        }
+      } catch (err) {
+        console.warn(`${layerId} GetFeatureInfo failed`, err);
+        return null;
+      }
+    }
 
     // Click handler
     // ----------------------------
-
 
     function getKadasterFeatureInfoUrl(map, layerId, coordinate, projection) {
       const view = map.getView();
@@ -493,6 +566,8 @@ const MombasaSourceRef = useRef(
       let clickedLayerId = null;
 
       async function checkLayer(layer) {
+        console.log("Layer ID being checked:", layer.id);
+
         // console.log(
         //   "Checking layer:",
         //   layer.id,
@@ -530,59 +605,69 @@ const MombasaSourceRef = useRef(
             view.getProjection()
           );
           geojson = await fetch(url).then((r) => r.json());
-        }else if (layer.sourceType === "wms") {
-  const source = MombasaSourceRef.current;
-  if (!source) return null;
+        } else if (layer.sourceType === "wms") {
+          let source = null;
+          let queryLayerName = layer.id;
 
-  const projection = mapInstance.current.getView().getProjection().getCode();
-  const url = source.getFeatureInfoUrl(coordinate, resolution, projection, {
-    INFO_FORMAT: "application/json",
-    QUERY_LAYERS: layer.id,
-    FEATURE_COUNT: 10,
-  });
+          if (layer.id.startsWith("test_mombasa:")) {
+            source = MombasaSourceRef.current;
+          } else if (layer.id.toLowerCase() === "vihaga") {
+            source = MbaleSourceRef.current;
+            queryLayerName = "vihaga"; // force correct lowercase for server
+          }
 
-  if (!url) {
-    // console.warn("Mombasa source returned no URL");
-    return null;
-  }
+          if (!source) return null;
 
-  try {
-    // console.log("Mombasa GetFeatureInfo URL:", url);
+          const projection = view.getProjection().getCode();
 
-    const res = await fetch(url);
-    if (!res.ok) {
-      // console.warn("Mombasa GetFeatureInfo HTTP error:", res.status);
-      return null;
-    }
+          let infoFormat = "application/json";
+          if (queryLayerName === "vihaga") {
+            infoFormat = "application/json; subtype=geojson";
+          }
 
-    const text = await res.text();
-    console.log("Mombasa raw response:", text);
+          const url = source.getFeatureInfoUrl(
+            coordinate,
+            resolution,
+            projection,
+            {
+              INFO_FORMAT: infoFormat,
+              QUERY_LAYERS: queryLayerName,
+              FEATURE_COUNT: 10,
+            }
+          );
 
-    let geojson;
-    try {
-      geojson = JSON.parse(text);
-    } catch (err) {
-      console.warn("Failed to parse Mombasa response as JSON", err);
-      return null;
-    }
+          console.log(`${layer.id} GetFeatureInfo URL:`, url);
 
-    if (!geojson?.features?.length) return null;
+          if (!url) return null;
 
-    const format = new GeoJSON();
-    const features = format.readFeatures(geojson, {
-      featureProjection: mapInstance.current.getView().getProjection(),
-    });
+          try {
+            const res = await fetch(url);
 
-    if (features.length > 0) {
-      clickedLayerId = layer.id;
-      return features;
-    }
-  } catch (err) {
-    console.warn("Mombasa GetFeatureInfo failed", err);
-    return null;
-  }
-}
+            // Always read as text, regardless of MIME type
+            const text = await res.text();
+            console.log(`${layer.id} raw response:`, text);
 
+            let geojson;
+            try {
+              geojson = JSON.parse(text);
+            } catch (parseErr) {
+              console.warn(`${layer.id} JSON parse failed`, parseErr);
+              return null;
+            }
+
+            if (!geojson?.features?.length) return null;
+
+            const format = new GeoJSON();
+            const features = format.readFeatures(geojson, {
+              featureProjection: mapInstance.current.getView().getProjection(),
+            });
+
+            if (features.length > 0) return features;
+          } catch (err) {
+            console.warn(`${layer.id} GetFeatureInfo failed`, err);
+            return null;
+          }
+        }
 
         if (geojson) {
           const format = new GeoJSON();
@@ -636,16 +721,22 @@ const MombasaSourceRef = useRef(
   // ----------------------------
   // Initial map setup
   // ----------------------------
-useEffect(() => {
-  const initialCenter = [39.6682, -4.0435]; // Mombasa, Kenya
-  createMap(
-    "EPSG:3857",
-    initialCenter,
-    18, // zoom level for city view
-    activeBackgroundLayer || "openstreet"
-  );
-  setCurrentProjectionCode("EPSG:3857");
-}, []);
+  useEffect(() => {
+    // Calculate center from Vihiga bounding box
+    const vihigaCenter = [
+      (34.708 + 34.7368) / 2, // longitude
+      (0.0722392 + 0.102843) / 2, // latitude
+    ];
+
+    createMap(
+      "EPSG:3857",
+      vihigaCenter,
+      18, // adjust zoom as needed for area
+      activeBackgroundLayer || "openstreet"
+    );
+
+    setCurrentProjectionCode("EPSG:3857");
+  }, []);
 
   // ----------------------------
   // Background switching on zoom/center
@@ -771,49 +862,46 @@ useEffect(() => {
     // KadastraleGrens:
     //   "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0/legend/KadastraleGrens.png",
 
-
-//Mombasa
-      MombasaData:
+    //Mombasa
+    MombasaData:
       "http://services.digireg.com/wms/test/mombasa/ows?service=WMS&version=1.3.0&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=test_mombasa%3ARoads%20and%20Paths",
+
+    vihiga:
+      "https://services.digireg.com/mapserver/mbale?version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=vihaga&format=image/png&STYLE=default",
   };
 
-  
   // ----------------------------
   // Update Legend URLs dynamically (hardcoded)
   // ----------------------------
-useEffect(() => {
-  // Start with all non-Mombasa active layers
+  useEffect(() => {
+    // Start with all non-Mombasa active layers
 
+    let updatedLayers = dataLayers
+      .flatMap((group) => group.children)
+      .filter((l) => l.active && !l.id.startsWith("test_mombasa:"))
+      .map((l) => ({
+        ...l,
+        legendUrl: LEGEND_URLS[l.id] || LEGEND_URLS[l.layerName] || null,
+      }));
 
-  let updatedLayers = dataLayers
-    .flatMap((group) => group.children)
-    .filter((l) => l.active && !l.id.startsWith("test_mombasa:"))
-    .map((l) => ({
-      ...l,
-      legendUrl: LEGEND_URLS[l.id] || LEGEND_URLS[l.layerName] || null,
-    }));
+    // Add a single Mombasa legend entry if any Mombasa layer is active
+    const mombasaActive = dataLayers
+      .flatMap((group) => group.children)
+      .some((l) => l.active && l.id.startsWith("test_mombasa:"));
 
-  // Add a single Mombasa legend entry if any Mombasa layer is active
-  const mombasaActive = dataLayers
-    .flatMap((group) => group.children)
-    .some((l) => l.active && l.id.startsWith("test_mombasa:"));
-    
+    if (mombasaActive) {
+      updatedLayers.push({
+        id: "Mombasa",
+        layerName: "Mombasa",
+        legendUrl: LEGEND_URLS["MombasaData"],
+      });
+    }
+    // console.log("Active layers:", dataLayers.flatMap(g => g.children).filter(l => l.active));
+    // console.log("Mombasa active?", mombasaActive);
+    // console.log("Updated legend layers:", updatedLayers);
 
-  if (mombasaActive) {
-    updatedLayers.push({
-      id: "Mombasa",
-      layerName: "Mombasa",
-      legendUrl: LEGEND_URLS["MombasaData"],
-    });
-  }
-  // console.log("Active layers:", dataLayers.flatMap(g => g.children).filter(l => l.active));
-  // console.log("Mombasa active?", mombasaActive);
-  // console.log("Updated legend layers:", updatedLayers);
-
-  setActiveLegendLayers(updatedLayers);
-}, [dataLayers]);
-
-
+    setActiveLegendLayers(updatedLayers);
+  }, [dataLayers]);
 
   // ----------------------------
   // Search handler
@@ -842,7 +930,6 @@ useEffect(() => {
     })
   );
 
-  
   const { activeTool, handleSelectTool, stopMeasurement, clearMeasurements } =
     useMeasurementTool(mapInstance.current, measureLayer);
 
@@ -888,11 +975,11 @@ useEffect(() => {
         selectedFeature={selectedFeature}
       />
 
-        <Measurement
-          isOpen={activePanel === "metingen"}
-          setActivePanel={setActivePanel}
-          onSelectTool={handleSelectTool}
-        />
+      <Measurement
+        isOpen={activePanel === "metingen"}
+        setActivePanel={setActivePanel}
+        onSelectTool={handleSelectTool}
+      />
 
       <DataLabel dataLayers={dataLayers} />
       <Legend activeLayers={activeLegendLayers} />
