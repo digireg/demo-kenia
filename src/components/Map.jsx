@@ -864,7 +864,7 @@ export default function OLMap({
 
     //Mombasa
     MombasaData:
-      "http://services.digireg.com/wms/test/mombasa/ows?service=WMS&version=1.3.0&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=test_mombasa%3ARoads%20and%20Paths",
+      "https://services.digireg.com/wms/test/mombasa/ows?service=WMS&version=1.3.0&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=test_mombasa%3ARoads%20and%20Paths",
 
     vihiga:
       "https://services.digireg.com/mapserver/mbale?version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=vihaga&format=image/png&STYLE=default",
