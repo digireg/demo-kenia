@@ -351,7 +351,7 @@ export default function OLMap({
 
   const MombasaSourceRef = useRef(
     new TileWMS({
-      url: "http://services.digireg.com/wms/test/mombasa/ows?",
+      url: "https://services.digireg.com/wms/test/mombasa/ows?",
       params: {
         LAYERS:
           "test_mombasa:Barriers,test_mombasa:Bridges,test_mombasa:Buildings,test_mombasa:Civil Engineering Structures,test_mombasa:Greenery,test_mombasa:Open Terrain,test_mombasa:Other Structures,test_mombasa:Roads and Paths,test_mombasa:Roadside,test_mombasa:Shore,test_mombasa:Water",
