@@ -1,20 +1,20 @@
-import React, { useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 import {
   AchtergrondLaagContainer,
   AchtergrondLaagPanel,
   PanelHeader,
   PreviewGrid,
   PreviewTile,
-  TileThumbnail
+  TileThumbnail,
 } from "../style_componets/AchtergrondLaagContainerStyle";
-import { FiMap } from 'react-icons/fi';
+import { FiMap } from "react-icons/fi";
 
 export default function AchtergrondLaag({
   isOpen,
   setActivePanel,
   setActiveBackgroundLayer,
-  activeBackgroundLayer
+  activeBackgroundLayer,
 }) {
   const panelRef = useRef(null); // Ref to detect clicks outside panel
 
@@ -23,13 +23,25 @@ export default function AchtergrondLaag({
    * Each has an id (for logic), a display name, and a thumbnail path.
    * Note: ids correspond exactly to the keys used in map.jsx createBaseLayer().
    */
-const backgroundLayers = [
-  { id: 'openstreet', name: 'OpenStreetMap', thumbnail: '/thumbnails/openstreet.png' },
-  { id: 'esri', name: 'Esri Satellite', thumbnail: '/thumbnails/esri.png' },
-  { id: 'mombasa', name: 'Digireg Mombasa Satellite', thumbnail: '/thumbnails/mombasa.png' },
-  // { id: 'pdok_BRT', name: 'PDOK BRT', thumbnail: '/thumbnails/pdok_BRT.png' },
-  // { id: 'pdok_luchtfoto', name: 'PDOK Luchtfoto', thumbnail: '/thumbnails/pdok_luchtfoto.png' },
-];
+  const backgroundLayers = [
+    {
+      id: "openstreet",
+      name: "OpenStreetMap",
+      thumbnail: "/demo-kenia/thumbnails/openstreet.png",
+    },
+    {
+      id: "esri",
+      name: "Esri Satellite",
+      thumbnail: "/demo-kenia/thumbnails/esri.png",
+    },
+    {
+      id: "mombasa",
+      name: "Digireg Mombasa Satellite",
+      thumbnail: "/demo-kenia/thumbnails/mombasa.png",
+    },
+    // { id: 'pdok_BRT', name: 'PDOK BRT', thumbnail: '/thumbnails/pdok_BRT.png' },
+    // { id: 'pdok_luchtfoto', name: 'PDOK Luchtfoto', thumbnail: '/thumbnails/pdok_luchtfoto.png' },
+  ];
 
   /**
    * Close the panel if user clicks outside of it.
@@ -43,11 +55,11 @@ const backgroundLayers = [
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, setActivePanel]);
 
@@ -60,13 +72,17 @@ const backgroundLayers = [
         </PanelHeader>
 
         <PreviewGrid>
-          {backgroundLayers.map(layer => (
+          {backgroundLayers.map((layer) => (
             <PreviewTile
               key={layer.id}
               onClick={() => setActiveBackgroundLayer(layer.id)}
               $active={activeBackgroundLayer === layer.id}
             >
-              <TileThumbnail as="img" src={layer.thumbnail} alt={`${layer.name} thumbnail`} />
+              <TileThumbnail
+                as="img"
+                src={layer.thumbnail}
+                alt={`${layer.name} thumbnail`}
+              />
               <p>{layer.name}</p>
             </PreviewTile>
           ))}
@@ -78,8 +94,8 @@ const backgroundLayers = [
 
 // ✅ Prop validation for correct usage and documentation
 AchtergrondLaag.propTypes = {
-  isOpen: PropTypes.bool.isRequired,                   // Whether the panel is open
-  setActivePanel: PropTypes.func.isRequired,           // Function to open/close panels
+  isOpen: PropTypes.bool.isRequired, // Whether the panel is open
+  setActivePanel: PropTypes.func.isRequired, // Function to open/close panels
   setActiveBackgroundLayer: PropTypes.func.isRequired, // Function to set active background layer
-  activeBackgroundLayer: PropTypes.string.isRequired,  // Currently active background layer id
+  activeBackgroundLayer: PropTypes.string.isRequired, // Currently active background layer id
 };
