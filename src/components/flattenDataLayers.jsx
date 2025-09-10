@@ -5,9 +5,9 @@ export function flattenDataLayers(dataLayers) {
         // Each child is a style
         return layer.children.map((child) => ({
           groupId,
-          layerId: layer.id,     // OL layer id
-          styleId: child.id,     // style for OL
-          label: layer.title,    // <-- use layer title, not style name
+          layerId: layer.id, // OL layer id
+          styleId: child.id, // style for OL
+          label: layer.title, // <-- use layer title, not style name
           active: child.active,
           opacity: child.opacity,
         }));
@@ -15,7 +15,7 @@ export function flattenDataLayers(dataLayers) {
         return {
           groupId,
           layerId: layer.id,
-          styleId: "",           // no style
+          styleId: "", // no style
           label: layer.title,
           active: layer.active,
           opacity: layer.opacity,

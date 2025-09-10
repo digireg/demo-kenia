@@ -50,26 +50,53 @@ export async function DataLayerCreate(wmsUrl, groupTitle = "WMS Layer") {
     const dataLayers = allLayers.map((layer) => {
       const layerName =
         layer.querySelector(":scope > Name")?.textContent || "unknown";
-      const layerTitle =
+
+      const rawTitle =
         layer.querySelector(":scope > Title")?.textContent || layerName;
+      const layerTitle = rawTitle.replace(/^test_mombasa:/, "");
+
+      // --- BBOX integration ---
+      const bboxElement = layer.querySelector(
+        ":scope > EX_GeographicBoundingBox"
+      );
+      const bbox = bboxElement
+        ? [
+            parseFloat(
+              bboxElement.querySelector("westBoundLongitude")?.textContent
+            ),
+            parseFloat(
+              bboxElement.querySelector("southBoundLatitude")?.textContent
+            ),
+            parseFloat(
+              bboxElement.querySelector("eastBoundLongitude")?.textContent
+            ),
+            parseFloat(
+              bboxElement.querySelector("northBoundLatitude")?.textContent
+            ),
+          ]
+        : null;
 
       const styleElements = Array.from(
         layer.querySelectorAll(":scope > Style")
       );
-      const styles = styleElements.map((s, i) => ({
-        id: s.querySelector("Name")?.textContent || `style${i}`,
-        name: s.querySelector("Title")?.textContent || `style${i}`,
-        inputType: "radio",
-        type: "wms",
-        children: [],
-        opacity: 100,
-        legendUrl:
-          s
-            .querySelector("LegendURL > OnlineResource")
-            ?.getAttribute("xlink:href") || null,
-        active: i === 0,
-        sourceType, // <-- assign here!
-      }));
+      const styles = styleElements.map((s, i) => {
+        const rawStyleName =
+          s.querySelector("Title")?.textContent || `style${i}`;
+        return {
+          id: s.querySelector("Name")?.textContent || `style${i}`,
+          name: rawStyleName.replace(/^test_mombasa:/, ""),
+          inputType: "radio",
+          type: "wms",
+          children: [],
+          opacity: 100,
+          legendUrl:
+            s
+              .querySelector("LegendURL > OnlineResource")
+              ?.getAttribute("xlink:href") || null,
+          active: i === 0,
+          sourceType,
+        };
+      });
 
       return {
         id: layerName,
@@ -81,7 +108,8 @@ export async function DataLayerCreate(wmsUrl, groupTitle = "WMS Layer") {
         opacity: 100,
         legendUrl: null,
         groupTitle,
-        sourceType, // <-- assign here too!
+        sourceType,
+        bbox, // <-- fully integrated bbox
       };
     });
 

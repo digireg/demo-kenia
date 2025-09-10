@@ -26,7 +26,7 @@ import AchtergrondLaag from "./AchtergrondLaagContainer";
 import TransparantieLaagSelect from "./TransparantieLaagContainer";
 import DataLaagSelect from "./DataLaagSelectContainer";
 import DataLabel from "./DataLabelContainer";
-import useMapLayers from "./UseMapLayers";
+import useMapLayers from "../hooks/UseMapLayers";
 
 import {
   MapContainer,
