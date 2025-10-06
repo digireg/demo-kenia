@@ -1,7 +1,10 @@
-import React from 'react';
-import { ZoomControlContainer, ZoomInButton, ZoomOutButton } from '../style_componets/ZoomControlStyle';
+import React from "react";
+import {
+  ZoomControlContainer,
+  ZoomInButton,
+  ZoomOutButton,
+} from "../style_components/ZoomControlStyle";
 import { FiPlus, FiMinus } from "react-icons/fi";
-
 
 export default function ZoomControl({ mapRef }) {
   const zoomIn = () => {
@@ -20,8 +23,12 @@ export default function ZoomControl({ mapRef }) {
 
   return (
     <ZoomControlContainer>
-      <ZoomInButton onClick={zoomIn}><FiPlus/></ZoomInButton>
-      <ZoomOutButton onClick={zoomOut}><FiMinus/></ZoomOutButton>
+      <ZoomInButton onClick={zoomIn}>
+        <FiPlus />
+      </ZoomInButton>
+      <ZoomOutButton onClick={zoomOut}>
+        <FiMinus />
+      </ZoomOutButton>
     </ZoomControlContainer>
   );
 }

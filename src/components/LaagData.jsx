@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MapButton } from "../style_componets/Buttons";
+import { MapButton } from "../style_components/Buttons";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import {
   LaagDataContainer,
@@ -8,7 +8,7 @@ import {
   Data,
   CustomAccordion,
   PanelTitle,
-} from "../style_componets/LaagDataStyle";
+} from "../style_components/LaagDataStyle";
 
 // List of technical fields to ignore
 const TECHNICAL_FIELDS = ["geometry", "layerName", "typeName", "__id", "__fid"];

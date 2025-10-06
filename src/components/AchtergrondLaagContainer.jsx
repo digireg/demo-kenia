@@ -1,4 +1,6 @@
-import React, { useEffect, useRef } from "react";
+//v2
+// src/components/AchtergrondLaag.jsx
+import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   AchtergrondLaagContainer,
@@ -7,8 +9,9 @@ import {
   PreviewGrid,
   PreviewTile,
   TileThumbnail,
-} from "../style_componets/AchtergrondLaagContainerStyle";
+} from "../style_components/AchtergrondLaagContainerStyle";
 import { FiMap } from "react-icons/fi";
+import { backgroundLayersConfig } from "../config/backgroundLayersConfig";
 
 export default function AchtergrondLaag({
   isOpen,
@@ -16,37 +19,20 @@ export default function AchtergrondLaag({
   setActiveBackgroundLayer,
   activeBackgroundLayer,
 }) {
-  const panelRef = useRef(null); // Ref to detect clicks outside panel
+  const panelRef = useRef(null);
 
-  /**
-   * Define available background layers.
-   * Each has an id (for logic), a display name, and a thumbnail path.
-   * Note: ids correspond exactly to the keys used in map.jsx createBaseLayer().
-   */
-  const backgroundLayers = [
-    {
-      id: "openstreet",
-      name: "OpenStreetMap",
-      thumbnail: "/demo-kenia/thumbnails/openstreet.png",
-    },
-    {
-      id: "esri",
-      name: "Esri Satellite",
-      thumbnail: "/demo-kenia/thumbnails/esri.png",
-    },
-    {
-      id: "mombasa",
-      name: "Digireg Mombasa Satellite",
-      thumbnail: "/demo-kenia/thumbnails/mombasa.png",
-    },
-    // { id: 'pdok_BRT', name: 'PDOK BRT', thumbnail: '/thumbnails/pdok_BRT.png' },
-    // { id: 'pdok_luchtfoto', name: 'PDOK Luchtfoto', thumbnail: '/thumbnails/pdok_luchtfoto.png' },
-  ];
+  // Flatten config into an array for display
+  const backgroundLayers = Object.values(backgroundLayersConfig).flatMap(
+    (projLayers) =>
+      Object.values(projLayers).map((layer) => ({
+        id: layer.id,
+        name: layer.title,
+        // Optional: add thumbnails; fallback if none
+        thumbnail: layer.thumbnail || `/demo-kenia/thumbnails/${layer.id}.png`,
+      }))
+  );
 
-  /**
-   * Close the panel if user clicks outside of it.
-   * Runs whenever `isOpen` changes.
-   */
+  // Close panel if click outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (panelRef.current && !panelRef.current.contains(event.target)) {
@@ -92,10 +78,9 @@ export default function AchtergrondLaag({
   );
 }
 
-// ✅ Prop validation for correct usage and documentation
 AchtergrondLaag.propTypes = {
-  isOpen: PropTypes.bool.isRequired, // Whether the panel is open
-  setActivePanel: PropTypes.func.isRequired, // Function to open/close panels
-  setActiveBackgroundLayer: PropTypes.func.isRequired, // Function to set active background layer
-  activeBackgroundLayer: PropTypes.string.isRequired, // Currently active background layer id
+  isOpen: PropTypes.bool.isRequired,
+  setActivePanel: PropTypes.func.isRequired,
+  setActiveBackgroundLayer: PropTypes.func.isRequired,
+  activeBackgroundLayer: PropTypes.string.isRequired,
 };

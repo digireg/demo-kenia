@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const SwitchLabel = styled.label`
   display: inline-flex;
@@ -7,13 +7,13 @@ const SwitchLabel = styled.label`
   cursor: pointer;
 `;
 
-const HiddenCheckbox = styled.input.attrs({ type: 'checkbox' })`
+const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
   opacity: 0;
   width: 0;
   height: 0;
 
   &:checked + span {
-    background-color: #284F97;
+    background-color: #284f97;
   }
 
   &:checked + span::before {

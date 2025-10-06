@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { MdLabel } from 'react-icons/md';
-import Accordion from '../style_componets/Accordion';
+import React, { useEffect, useRef, useState } from "react";
+import { MdLabel } from "react-icons/md";
+import Accordion from "../style_components/Accordion";
 
 import {
   DataLaagSelectContainer,
@@ -11,12 +11,12 @@ import {
   FilterInput,
   Content,
   BottomSpacer,
-  NoResults
-} from '../style_componets/DataLabelContainerStyle';
+  NoResults,
+} from "../style_components/DataLabelContainerStyle";
 
 export default function DataLabel({ isOpen, setActivePanel }) {
-  const panelRef = useRef(null);                    // Reference for detecting outside clicks
-  const [filterQuery, setFilterQuery] = useState(''); // Controlled input state for filter
+  const panelRef = useRef(null); // Reference for detecting outside clicks
+  const [filterQuery, setFilterQuery] = useState(""); // Controlled input state for filter
 
   /**
    * Static accordion data representing label groups and their items.
@@ -24,25 +24,31 @@ export default function DataLabel({ isOpen, setActivePanel }) {
    */
   const accordionData = [
     {
-      title: 'BAG',
+      title: "BAG",
       count: 5,
-      children: ['gebouw', 'perceel', 'adres', 'ligplaats', 'standplaats']
+      children: ["gebouw", "perceel", "adres", "ligplaats", "standplaats"],
     },
     {
-      title: 'BGT',
+      title: "BGT",
       count: 6,
-      children: ['wegdeel', 'waterdeel', 'groenvoorziening', 'begroeidterreindeel', 'onbegroeidterreindeel']
+      children: [
+        "wegdeel",
+        "waterdeel",
+        "groenvoorziening",
+        "begroeidterreindeel",
+        "onbegroeidterreindeel",
+      ],
     },
     {
-      title: 'Kadastrale Kaart',
+      title: "Kadastrale Kaart",
       count: 2,
-      children: ['sectie', 'perceel']
+      children: ["sectie", "perceel"],
     },
     {
-      title: 'Kadastrale Kaart (WMS)',
+      title: "Kadastrale Kaart (WMS)",
       count: 10,
-      children: ['laag 1', 'laag 2', 'laag 3', 'laag 4', 'laag 5']
-    }
+      children: ["laag 1", "laag 2", "laag 3", "laag 4", "laag 5"],
+    },
   ];
 
   /**
@@ -52,14 +58,16 @@ export default function DataLabel({ isOpen, setActivePanel }) {
    * - Exclude group otherwise
    */
   const filteredAccordions = accordionData
-    .map(group => {
-      const titleMatches = group.title.toLowerCase().includes(filterQuery.toLowerCase());
-      const matchingChildren = group.children.filter(child =>
+    .map((group) => {
+      const titleMatches = group.title
+        .toLowerCase()
+        .includes(filterQuery.toLowerCase());
+      const matchingChildren = group.children.filter((child) =>
         child.toLowerCase().includes(filterQuery.toLowerCase())
       );
 
       if (titleMatches) {
-        return group;  // Show whole group
+        return group; // Show whole group
       } else if (matchingChildren.length > 0) {
         return { ...group, children: matchingChildren }; // Partial children match
       }
@@ -78,11 +86,11 @@ export default function DataLabel({ isOpen, setActivePanel }) {
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, setActivePanel]);
 
@@ -99,20 +107,24 @@ export default function DataLabel({ isOpen, setActivePanel }) {
 
           {/* Filter input field */}
           <FilterInput
-            id='FilterDataLabelLagen'
+            id="FilterDataLabelLagen"
             type="text"
             placeholder="Filter lagen..."
             value={filterQuery}
-            onChange={e => setFilterQuery(e.target.value)}
+            onChange={(e) => setFilterQuery(e.target.value)}
             aria-label="Filter lagen"
           />
         </Header>
 
         <Content>
           {filteredAccordions.length > 0 ? (
-            filteredAccordions.map(group => (
-              <Accordion key={group.title} title={group.title} count={group.count}>
-                {group.children.map(child => (
+            filteredAccordions.map((group) => (
+              <Accordion
+                key={group.title}
+                title={group.title}
+                count={group.count}
+              >
+                {group.children.map((child) => (
                   <div key={child}>{child}</div>
                 ))}
               </Accordion>

@@ -5,8 +5,8 @@ import {
   TransparantieLaagPanel,
   FilterInput,
   NoResults,
-} from "../style_componets/TransparantieLaagContainerStyle";
-import OpacitySlider from "../style_componets/Slider";
+} from "../style_components/TransparantieLaagContainerStyle";
+import OpacitySlider from "../style_components/Slider";
 import { flattenDataLayers } from "./flattenDataLayers";
 
 export default function TransparantieLaagSelect({
@@ -18,13 +18,14 @@ export default function TransparantieLaagSelect({
   const panelRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter layers based on search query and active state (only active layers shown)
   const flattenedLayers = flattenDataLayers(dataLayers);
-  const filteredLayers = flattenedLayers.filter((layer) =>
-    layer.label.toLowerCase().includes(searchQuery.toLowerCase())
+
+  const filteredLayers = flattenedLayers.filter(
+    (layer) =>
+      (layer.label || "").toLowerCase().includes(searchQuery.toLowerCase()) &&
+      layer.active
   );
 
-  // Close panel when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (panelRef.current && !panelRef.current.contains(event.target)) {
@@ -67,8 +68,6 @@ export default function TransparantieLaagSelect({
             <FiEye style={{ fontSize: "20px" }} />
             <h1>Layer opacity</h1>
           </div>
-
-          {/* Filter input */}
           <FilterInput
             id="filterTransparatieLagen"
             type="text"
@@ -78,23 +77,22 @@ export default function TransparantieLaagSelect({
           />
         </header>
 
-        {/* Show sliders for active filtered layers */}
         <div style={{ display: "flex", flexDirection: "column" }}>
           {filteredLayers.length > 0 ? (
-            filteredLayers.map(({ groupId, layerId, label }) => {
-              const layer = dataLayers
-                .find((g) => g.id === groupId)
-                ?.children.find((l) => l.id === layerId);
+            filteredLayers.map(({ groupId, id, label, key }) => {
+              const group = dataLayers.find((g) => g.id === groupId);
+              if (!group) return null;
 
-              if (!layer || !layer.active) return null;
+              const layer = group.children.find((l) => l.id === id);
+              if (!layer) return null;
 
               return (
                 <OpacitySlider
-                  key={`${groupId}:${layerId}`}
-                  label={label}
+                  key={key} // ✅ guaranteed unique
+                  label={label || layer.title || "Unnamed Layer"}
                   value={layer.opacity}
                   onChange={(newOpacity) =>
-                    setLayerOpacity(groupId, layerId, newOpacity)
+                    setLayerOpacity(groupId, layer.id, newOpacity)
                   }
                 />
               );

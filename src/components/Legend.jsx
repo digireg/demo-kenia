@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { MapButton } from "../style_componets/Buttons"; // Styled button component
+import React, { useState } from "react";
+import { MapButton } from "../style_components/Buttons"; // Styled button component
 import { MdLegendToggle } from "react-icons/md"; // Icon for legend toggle
-import { LegendButtonContainer, LegendaPanel } from "../style_componets/LegendStyle"; // Legend container styles
-import Accordion from '../style_componets/Accordion'; // Accordion component for grouped layers
+import {
+  LegendButtonContainer,
+  LegendaPanel,
+} from "../style_components/LegendStyle"; // Legend container styles
+import Accordion from "../style_components/Accordion"; // Accordion component for grouped layers
 
 /**
  * Legend component
@@ -14,17 +17,16 @@ export default function Legend({ activeLayers = [] }) {
   const [isOpen, setIsOpen] = useState(false);
 
   // Toggle visibility of the legend panel
-  const toggleLegenda = () => setIsOpen(prev => !prev);
+  const toggleLegenda = () => setIsOpen((prev) => !prev);
 
   // Total count of active layers (used in button)
   const totalCount = activeLayers.length;
 
   // Group layers by their groupTitle
   const groupedLayers = activeLayers.reduce((acc, layer) => {
-    const groupTitle = layer.groupTitle|| "MombasaData"; // no fallback
-    if (!groupTitle) return acc; // skip layers without a groupTitle
-    if (!acc[groupTitle]) acc[groupTitle] = [];
-    acc[groupTitle].push(layer);
+    const datasetName = layer.groupTitle || "Dataset";
+    if (!acc[datasetName]) acc[datasetName] = [];
+    acc[datasetName].push(layer);
     return acc;
   }, {});
 
@@ -42,21 +44,34 @@ export default function Legend({ activeLayers = [] }) {
       </MapButton>
 
       {/* Collapsible legend panel */}
-      <LegendaPanel $isOpen={isOpen} id="legend-panel" role="region" aria-hidden={!isOpen}>
+      <LegendaPanel
+        $isOpen={isOpen}
+        id="legend-panel"
+        role="region"
+        aria-hidden={!isOpen}
+      >
         {Object.keys(groupedLayers).length > 0 ? (
           Object.entries(groupedLayers).map(([groupTitle, layers]) => (
-            <Accordion key={groupTitle} title={groupTitle} count={layers.length}>
-              {layers.map(layer => (
+            <Accordion
+              key={groupTitle}
+              title={groupTitle}
+              count={layers.length}
+            >
+              {layers.map((layer) => (
                 <div
                   key={layer.id}
-                  style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "4px",
+                  }}
                 >
                   {/* Display legend image if available, else display layer name in placeholder */}
                   {layer.legendUrl ? (
                     <img
                       src={layer.legendUrl}
                       alt={layer.name}
-                      style={{ width: 'auto', height: 'auto', marginRight: 6 }}
+                      style={{ width: "auto", height: "auto", marginRight: 6 }}
                     />
                   ) : (
                     <div
@@ -64,12 +79,12 @@ export default function Legend({ activeLayers = [] }) {
                         width: 24,
                         height: 24,
                         marginRight: 6,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         fontSize: 10,
-                        textAlign: 'center',
-                        backgroundColor: '#eee',
+                        textAlign: "center",
+                        backgroundColor: "#eee",
                         borderRadius: 4,
                       }}
                     >
@@ -82,7 +97,9 @@ export default function Legend({ activeLayers = [] }) {
           ))
         ) : (
           <div>
-            <p><em>No legend available</em></p>
+            <p>
+              <em>No legend available</em>
+            </p>
           </div>
         )}
       </LegendaPanel>

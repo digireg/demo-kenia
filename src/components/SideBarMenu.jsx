@@ -1,56 +1,74 @@
-import React from 'react';
-import { SideMenu, SideBarIconContainer, SideBarMenuIconContainer } from '../style_componets/SidebarMenuStyle';
-import { NavButton } from '../style_componets/Buttons'; // adjust if needed
-import { FiSidebar, FiMap, FiLayers, FiEye, FiFilter } from 'react-icons/fi';
-import { FaRuler } from 'react-icons/fa';
-import { MdLabel } from 'react-icons/md';
+import React from "react";
+import {
+  SideMenu,
+  SideBarIconContainer,
+  SideBarMenuIconContainer,
+} from "../style_components/SidebarMenuStyle";
+import { NavButton } from "../style_components/Buttons"; // adjust if needed
+import { FiSidebar, FiMap, FiLayers, FiEye, FiFilter } from "react-icons/fi";
+import { FaRuler } from "react-icons/fa";
+import { MdLabel } from "react-icons/md";
 
-export default function SideBarMenu({ onOpenOverlay, activePanel, setActivePanel }) {
+export default function SideBarMenu({
+  onOpenOverlay,
+  activePanel,
+  setActivePanel,
+}) {
   return (
     <SideMenu>
       <SideBarIconContainer>
-        <NavButton icon={<FiSidebar />} onClick={onOpenOverlay} aria-label="Open menu" />
+        <NavButton
+          icon={<FiSidebar />}
+          onClick={onOpenOverlay}
+          aria-label="Open menu"
+        />
       </SideBarIconContainer>
       <SideBarMenuIconContainer>
-        <NavButton icon={<FiMap />}  
-        hideText
-        onClick={() =>
-          setActivePanel(activePanel === 'achtergrond' ? null : 'achtergrond')
-        }
+        <NavButton
+          icon={<FiMap />}
+          hideText
+          onClick={() =>
+            setActivePanel(activePanel === "achtergrond" ? null : "achtergrond")
+          }
         >
           Kaarten
         </NavButton>
-        <NavButton icon={<FiLayers/>} 
-        hideText
-        onClick={() =>
-          setActivePanel(activePanel === 'lagen' ? null : 'lagen')
-        }        
+        <NavButton
+          icon={<FiLayers />}
+          hideText
+          onClick={() =>
+            setActivePanel(activePanel === "lagen" ? null : "lagen")
+          }
         >
           Lagen
         </NavButton>
-        <NavButton icon={<FiEye/>} 
-        hideText
-        onClick={() =>
-          setActivePanel(activePanel === 'transparantie' ? null : 'transparantie')
+        <NavButton
+          icon={<FiEye />}
+          hideText
+          onClick={() =>
+            setActivePanel(
+              activePanel === "transparantie" ? null : "transparantie"
+            )
           }
-          >
-        </NavButton>
-        <NavButton icon={<FaRuler/>} 
-        onClick={() =>
-          setActivePanel(activePanel === 'metingen' ? null : 'metingen')
-        }        
-        hideText>
+        ></NavButton>
+        <NavButton
+          icon={<FaRuler />}
+          onClick={() =>
+            setActivePanel(activePanel === "metingen" ? null : "metingen")
+          }
+          hideText
+        >
           Metingen
         </NavButton>
-        <NavButton icon={<FiFilter/>} 
-        hideText>
+        <NavButton icon={<FiFilter />} hideText>
           Algemene Filter
         </NavButton>
-        <NavButton icon={<MdLabel/>} 
-        hideText
-        onClick={() =>
-          setActivePanel(activePanel === 'labels' ? null : 'labels')
-          }        
+        <NavButton
+          icon={<MdLabel />}
+          hideText
+          onClick={() =>
+            setActivePanel(activePanel === "labels" ? null : "labels")
+          }
         >
           Labelinstellingen
         </NavButton>

@@ -1,9 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
-import { SearchWrapper, Spinner, SuggestionsList, SuggestionItem } from '../style_componets/MapStyle';
+import {
+  SearchWrapper,
+  Spinner,
+  SuggestionsList,
+  SuggestionItem,
+} from "../style_components/MapStyle";
 
 export default function SearchBar({ onSearchResult }) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -23,19 +28,22 @@ export default function SearchBar({ onSearchResult }) {
     setIsLoading(true);
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&addressdetails=1`
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          value
+        )}&format=json&addressdetails=1`
       );
       let data = await res.json();
 
       // Sorteren op relevantie: meest gelijk aan begin van de naam
-      data.sort((a, b) =>
-        a.display_name.toLowerCase().indexOf(value.toLowerCase()) -
-        b.display_name.toLowerCase().indexOf(value.toLowerCase())
+      data.sort(
+        (a, b) =>
+          a.display_name.toLowerCase().indexOf(value.toLowerCase()) -
+          b.display_name.toLowerCase().indexOf(value.toLowerCase())
       );
 
       setSuggestions(data);
     } catch (error) {
-      console.error('Error fetching suggestions', error);
+      console.error("Error fetching suggestions", error);
       setSuggestions([]);
     }
     setIsLoading(false);
@@ -66,15 +74,19 @@ export default function SearchBar({ onSearchResult }) {
     if (suggestions.length === 0) return;
 
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
-        setHighlightedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : 0));
+        setHighlightedIndex((prev) =>
+          prev < suggestions.length - 1 ? prev + 1 : 0
+        );
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
-        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : suggestions.length - 1));
+        setHighlightedIndex((prev) =>
+          prev > 0 ? prev - 1 : suggestions.length - 1
+        );
         break;
-      case 'Escape':
+      case "Escape":
         setSuggestions([]);
         setHighlightedIndex(-1);
         break;
@@ -86,7 +98,7 @@ export default function SearchBar({ onSearchResult }) {
   // 🪄 Zoekterm vet maken in suggestie
   function HighlightedText({ text, highlight }) {
     if (!highlight) return <>{text}</>;
-    const regex = new RegExp(`(${highlight})`, 'gi');
+    const regex = new RegExp(`(${highlight})`, "gi");
     const parts = text.split(regex);
     return (
       <>
@@ -111,7 +123,9 @@ export default function SearchBar({ onSearchResult }) {
           ref={inputRef}
           aria-autocomplete="list"
           aria-controls="suggestions-list"
-          aria-activedescendant={highlightedIndex >= 0 ? `suggestion-${highlightedIndex}` : undefined}
+          aria-activedescendant={
+            highlightedIndex >= 0 ? `suggestion-${highlightedIndex}` : undefined
+          }
           role="combobox"
           aria-expanded={suggestions.length > 0}
           aria-haspopup="listbox"
@@ -130,7 +144,7 @@ export default function SearchBar({ onSearchResult }) {
               id={`suggestion-${idx}`}
               onClick={() => handleSelect(item)}
               onMouseEnter={() => setHighlightedIndex(idx)}
-              $isHighlighted={idx === highlightedIndex}  // ✅ transient prop
+              $isHighlighted={idx === highlightedIndex} // ✅ transient prop
               role="option"
               aria-selected={idx === highlightedIndex}
               tabIndex={-1}

@@ -1,9 +1,8 @@
-
-import React, { useState } from 'react';
-import OLMap from './components/Map';
-import { Helmet } from 'react-helmet';
-import { Layout } from './style_componets/Layout';
-import MenuContainer from './components/MenuContainer';
+import React, { useState } from "react";
+import OLMap from "./components/Map";
+import { Helmet } from "react-helmet";
+import { Layout } from "./style_components/Layout";
+import MenuContainer from "./components/MenuContainer";
 
 export default function App() {
   /**
@@ -16,7 +15,8 @@ export default function App() {
    * State to track which background layer is active.
    * Default is 'openstreet' so the map shows OpenStreetMap on load.
    */
-  const [activeBackgroundLayer, setActiveBackgroundLayer] = useState('openstreet');
+  const [activeBackgroundLayer, setActiveBackgroundLayer] =
+    useState("openstreet");
 
   return (
     <Layout>

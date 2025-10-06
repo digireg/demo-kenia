@@ -7,7 +7,7 @@ import {
   PreviewGrid,
   PreviewTile,
   TileThumbnail,
-} from "../style_componets/MeasurementContainerStyle";
+} from "../style_components/MeasurementContainerStyle";
 import { TbPolygon } from "react-icons/tb";
 import { FaRuler } from "react-icons/fa";
 import { TiImageOutline } from "react-icons/ti";
@@ -38,7 +38,7 @@ export default function Measurement({ isOpen, setActivePanel, onSelectTool }) {
       name: "Clear measurement",
       Icon: TiImageOutline,
     },
-        {
+    {
       id: "stopEnWisMeting",
       name: "Stop and clear measurement",
       Icon: TiImageOutline,
