@@ -34,10 +34,10 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
       });
       wmsWmtsLayersRef.current[layer.id] = source;
       layer.sourceRef = source;
-      console.log("[DEBUG] Registered WMS source:", layer.id, {
-        url: layerUrl,
-        params: { LAYERS: wmsLayerName },
-      });
+      // console.log("[DEBUG] Registered WMS source:", layer.id, {
+      //   url: layerUrl,
+      //   params: { LAYERS: wmsLayerName },
+      // });
     }
 
     if (layer.children?.length) {
@@ -62,115 +62,271 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
   // ----------------------------
   // Toggle layer active
   // ----------------------------
+
+  //v3 semi working radiobuttons
   // const setLayerActive = async (
   //   mapInstance,
   //   groupId,
   //   layerId,
-  //   inputType = "checkbox"
+  //   inputType = "checkbox",
+  //   style = null
   // ) => {
   //   if (!mapInstance) return;
   //   let layerToZoom = null;
 
-  //   setDataLayers((prevGroups) =>
-  //     prevGroups.map((group) => {
-  //       if (group.id !== groupId) return group;
-
-  //       const updatedChildren = group.children.map((child) => {
-  //         if (child.id !== layerId && inputType === "checkbox") return child;
-
-  //         // Ensure WMS source exists
-  //         if (
-  //           child.type?.toLowerCase() === "wms" &&
-  //           !wmsWmtsLayersRef.current[child.id]
-  //         ) {
-  //           registerLayerRecursive(child, group.url);
-  //         }
-
-  //         const updatedChild = handleLayerActive({
-  //           parent: child,
-  //           mapInstance,
-  //           groupId,
-  //           inputType,
-  //           wmsWmtsLayersRef,
-  //           projectionCode,
-  //           highlightSource,
-  //         });
-
-  //         if (!layerToZoom && updatedChild.layerToZoom) {
-  //           layerToZoom = updatedChild.layerToZoom;
-  //         }
-
-  //         return updatedChild;
+  //   // helper to ensure a WMS Tile source is registered for a layer
+  //   const ensureSource = (layer, parentUrl = null) => {
+  //     const url = layer.url || parentUrl;
+  //     if (
+  //       layer.type?.toLowerCase() === "wms" &&
+  //       !wmsWmtsLayersRef.current[layer.id]
+  //     ) {
+  //       const wmsLayerName = layer.wmsLayerName || layer.id;
+  //       const source = new TileWMS({
+  //         url,
+  //         params: { LAYERS: wmsLayerName, TILED: true },
+  //         serverType: "mapserver",
+  //         crossOrigin: "anonymous",
   //       });
 
-  //       return { ...group, children: updatedChildren };
-  //     })
-  //   );
+  //       const tileLayer = new TileLayer({ source });
+  //       wmsWmtsLayersRef.current[layer.id] = tileLayer;
+  //       layer.sourceRef = source;
 
-  //   if (layerToZoom)
-  //     requestAnimationFrame(() => zoomToLayer(mapInstance, layerToZoom));
-  // };
+  //       console.log("[DEBUG] Registered WMS Tile layer:", layer.id);
+  //     }
+  //   };
 
-  //working checkboxes
-  // const setLayerActive = async (
-  //   mapInstance,
-  //   groupId,
-  //   layerId,
-  //   inputType = "checkbox"
-  // ) => {
-  //   if (!mapInstance) return;
-  //   let layerToZoom = null;
-
-  //   // Recursive search for the specific layer
-  //   const toggleLayerById = (layers) => {
+  //   // Recursively walk and update the dataLayers children (pure data update)
+  //   const toggleLayerById = (layers, parent = null, parentUrl = null) => {
   //     return layers.map((layer) => {
-  //       // If this is the target layer, toggle it
+  //       // ensure we have a source reference if needed
+  //       ensureSource(layer, parentUrl);
+
+  //       // direct match (we hit the layer we toggled)
   //       if (layer.id === layerId) {
-  //         if (
-  //           layer.type?.toLowerCase() === "wms" &&
-  //           !wmsWmtsLayersRef.current[layer.id]
-  //         ) {
-  //           const source = new TileWMS({
-  //             url: layer.url,
-  //             params: { LAYERS: layer.wmsLayerName || layer.id, TILED: true },
-  //             serverType: "mapserver",
-  //             crossOrigin: "anonymous",
+  //         // --------------------
+  //         // 1) RADIO on parent that has a styles array: change activeStyle
+  //         // --------------------
+  //         if (inputType === "radio" && style != null && layer.styles?.length) {
+  //           const updated = { ...layer, active: true, activeStyle: style };
+
+  //           const handled = handleLayerActive({
+  //             parent: updated,
+  //             mapInstance,
+  //             groupId,
+  //             inputType: "radio",
+  //             style,
+  //             wmsWmtsLayersRef,
+  //             projectionCode,
+  //             highlightSource,
   //           });
-  //           wmsWmtsLayersRef.current[layer.id] = source;
-  //           layer.sourceRef = source;
+
+  //           if (handled?.layerToZoom && !layerToZoom)
+  //             layerToZoom = handled.layerToZoom;
+
+  //           // ✅ reflect active state of style-children
+  //           const newChildren = layer.children?.map((c) => ({
+  //             ...c,
+  //             active: c.id === layerId,
+  //           }));
+
+  //           return { ...updated, children: newChildren };
   //         }
 
-  //         const updatedLayer = handleLayerActive({
-  //           parent: layer,
-  //           mapInstance,
-  //           groupId,
-  //           inputType,
-  //           wmsWmtsLayersRef,
-  //           projectionCode,
-  //           highlightSource,
-  //         });
+  //         // --------------------
+  //         // 2) CHECKBOX toggle for this layer (works like before)
+  //         // --------------------
+  //         // if (inputType === "checkbox") {
+  //         //   const handled = handleLayerActive({
+  //         //     parent: layer,
+  //         //     mapInstance,
+  //         //     groupId,
+  //         //     inputType: "checkbox",
+  //         //     wmsWmtsLayersRef,
+  //         //     projectionCode,
+  //         //     highlightSource,
+  //         //   });
+  //         //   if (handled?.layerToZoom && !layerToZoom)
+  //         //     layerToZoom = handled.layerToZoom;
 
-  //         if (!layerToZoom && updatedLayer.layerToZoom) {
-  //           layerToZoom = updatedLayer.layerToZoom;
+  //         //   // If we just activated a parent AND the parent has radio-style children,
+  //         //   // auto-activate the first style-child (so a visible style appears on the map).
+  //         //   if (
+  //         //     handled.active &&
+  //         //     layer.children?.some((c) => c.inputType === "radio")
+  //         //   ) {
+  //         //     const firstChild = layer.children.find(
+  //         //       (c) => c.inputType === "radio"
+  //         //     );
+  //         //     if (firstChild) {
+  //         //       ensureSource(firstChild, layer.url || parentUrl);
+  //         //       // add map layer for the first child
+  //         //       const handledChild = handleLayerActive({
+  //         //         parent: { ...firstChild, active: true },
+  //         //         mapInstance,
+  //         //         groupId,
+  //         //         inputType: "checkbox",
+  //         //         wmsWmtsLayersRef,
+  //         //         projectionCode,
+  //         //         highlightSource,
+  //         //       });
+  //         //       if (handledChild?.layerToZoom && !layerToZoom)
+  //         //         layerToZoom = handledChild.layerToZoom;
+
+  //         //       // reflect children active states in returned data
+  //         //       const newChildren = layer.children.map((c) => ({
+  //         //         ...c,
+  //         //         active: c.id === firstChild.id,
+  //         //       }));
+  //         //       return { ...handled, children: newChildren };
+  //         //     }
+  //         //   }
+
+  //         //   return { ...handled, children: layer.children };
+  //         // }
+  //         if (inputType === "checkbox") {
+  //           const handled = handleLayerActive({
+  //             parent: layer,
+  //             mapInstance,
+  //             groupId,
+  //             inputType: "checkbox",
+  //             wmsWmtsLayersRef,
+  //             projectionCode,
+  //             highlightSource,
+  //             parentLayer: layer, // Pass parent for BBox fallback
+  //           });
+
+  //           if (handled?.layerToZoom && !layerToZoom)
+  //             layerToZoom = handled.layerToZoom;
+
+  //           // Auto-activate first style child if exists
+  //           if (
+  //             handled.active &&
+  //             layer.children?.some((c) => c.inputType === "radio")
+  //           ) {
+  //             const firstChild = layer.children.find(
+  //               (c) => c.inputType === "radio"
+  //             );
+  //             if (firstChild) {
+  //               const handledChild = handleLayerActive({
+  //                 parent: { ...firstChild, active: true },
+  //                 mapInstance,
+  //                 groupId,
+  //                 inputType: "checkbox",
+  //                 wmsWmtsLayersRef,
+  //                 projectionCode,
+  //                 highlightSource,
+  //                 parentLayer: layer, // <-- important for BBox fallback
+  //               });
+
+  //               if (handledChild?.layerToZoom && !layerToZoom)
+  //                 layerToZoom = handledChild.layerToZoom;
+
+  //               const newChildren = layer.children.map((c) => ({
+  //                 ...c,
+  //                 active: c.id === firstChild.id,
+  //               }));
+
+  //               return { ...handled, children: newChildren };
+  //             }
+  //           }
+
+  //           return { ...handled, children: layer.children };
+  //         }
+  //         // --------------------
+  //         // 3) RADIO clicked on a layer that itself is a radio-type (a child-style node)
+  //         //    -> activate this child and let parent remain active
+  //         // --------------------
+  //         if (inputType === "radio" && layer.inputType === "radio") {
+  //           // Activate this child on the map
+  //           const handledChild = handleLayerActive({
+  //             parent: { ...layer, active: true },
+  //             mapInstance,
+  //             groupId,
+  //             inputType: "checkbox",
+  //             wmsWmtsLayersRef,
+  //             projectionCode,
+  //             highlightSource,
+  //           });
+  //           if (handledChild?.layerToZoom && !layerToZoom)
+  //             layerToZoom = handledChild.layerToZoom;
+  //           // mark the child active in state
+  //           return { ...layer, active: true, children: layer.children };
   //         }
 
-  //         // If it has children, leave them as-is (don't activate automatically)
-  //         return { ...updatedLayer, children: layer.children };
+  //         return layer;
   //       }
 
-  //       // If not the target, but has children, recurse
+  //       // Recurse children
   //       if (layer.children?.length) {
-  //         return { ...layer, children: toggleLayerById(layer.children) };
+  //         // special-case: target is one of this node's children and we clicked a radio:
+  //         //   -> set this parent active, set only the chosen child active, deactivate others,
+  //         //      and update map layers accordingly.
+  //         if (
+  //           inputType === "radio" &&
+  //           layer.children.some((c) => c.id === layerId)
+  //         ) {
+  //           // ensure parent remains active
+  //           const newChildren = layer.children.map((c) => {
+  //             if (c.id === layerId) {
+  //               ensureSource(c, c.url || layer.url || parentUrl);
+  //               // activate newly selected child on the map
+  //               const handledSel = handleLayerActive({
+  //                 parent: { ...c, active: true },
+  //                 mapInstance,
+  //                 groupId,
+  //                 inputType: "checkbox",
+  //                 wmsWmtsLayersRef,
+  //                 projectionCode,
+  //                 highlightSource,
+  //               });
+  //               if (handledSel?.layerToZoom && !layerToZoom)
+  //                 layerToZoom = handledSel.layerToZoom;
+  //               return { ...c, active: true };
+  //             } else {
+  //               // if sibling was active, deactivate it on the map
+  //               if (c.active) {
+  //                 handleLayerActive({
+  //                   parent: { ...c, active: false },
+  //                   mapInstance,
+  //                   groupId,
+  //                   inputType: "checkbox",
+  //                   wmsWmtsLayersRef,
+  //                   projectionCode,
+  //                   highlightSource,
+  //                 });
+  //               }
+  //               return { ...c, active: false };
+  //             }
+  //           });
+
+  //           return { ...layer, active: true, children: newChildren };
+  //         }
+
+  //         // otherwise normal recursion
+  //         return {
+  //           ...layer,
+  //           children: toggleLayerById(
+  //             layer.children,
+  //             layer,
+  //             layer.url || parentUrl
+  //           ),
+  //         };
   //       }
 
-  //       return layer; // no match, no children
+  //       return layer;
   //     });
   //   };
 
+  //   // apply update to the correct group
   //   setDataLayers((prevGroups) =>
   //     prevGroups.map((group) =>
   //       group.id === groupId
-  //         ? { ...group, children: toggleLayerById(group.children) }
+  //         ? {
+  //             ...group,
+  //             children: toggleLayerById(group.children, null, group.url),
+  //           }
   //         : group
   //     )
   //   );
@@ -179,7 +335,6 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
   //     requestAnimationFrame(() => zoomToLayer(mapInstance, layerToZoom));
   // };
 
-  //v3 semi working radiobuttons
   const setLayerActive = async (
     mapInstance,
     groupId,
@@ -190,7 +345,6 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
     if (!mapInstance) return;
     let layerToZoom = null;
 
-    // helper to ensure a WMS Tile source is registered for a layer
     const ensureSource = (layer, parentUrl = null) => {
       const url = layer.url || parentUrl;
       if (
@@ -204,27 +358,25 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
           serverType: "mapserver",
           crossOrigin: "anonymous",
         });
-        wmsWmtsLayersRef.current[layer.id] = source;
+
+        const tileLayer = new TileLayer({ source });
+        wmsWmtsLayersRef.current[layer.id] = tileLayer;
         layer.sourceRef = source;
-        console.log("[DEBUG] Registered WMS source on demand:", layer.id);
+
+        console.log("[DEBUG] Registered WMS Tile layer:", layer.id);
       }
     };
 
-    // Recursively walk and update the dataLayers children (pure data update)
     const toggleLayerById = (layers, parent = null, parentUrl = null) => {
       return layers.map((layer) => {
-        // ensure we have a source reference if needed
         ensureSource(layer, parentUrl);
 
-        // direct match (we hit the layer we toggled)
+        // direct match
         if (layer.id === layerId) {
-          // --------------------
-          // 1) RADIO on parent that has a styles array: change activeStyle
-          // --------------------
+          // RADIO on parent with styles
           if (inputType === "radio" && style != null && layer.styles?.length) {
-            // update data for UI
             const updated = { ...layer, active: true, activeStyle: style };
-            // notify map logic (let handleLayerActive implement style switch)
+
             const handled = handleLayerActive({
               parent: updated,
               mapInstance,
@@ -235,14 +387,19 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
               projectionCode,
               highlightSource,
             });
+
             if (handled?.layerToZoom && !layerToZoom)
               layerToZoom = handled.layerToZoom;
-            return { ...updated, children: layer.children };
+
+            const newChildren = layer.children?.map((c) => ({
+              ...c,
+              active: c.id === layerId,
+            }));
+
+            return { ...handled, children: newChildren };
           }
 
-          // --------------------
-          // 2) CHECKBOX toggle for this layer (works like before)
-          // --------------------
+          // CHECKBOX toggle (sublayers allowed regardless of parent)
           if (inputType === "checkbox") {
             const handled = handleLayerActive({
               parent: layer,
@@ -252,12 +409,13 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
               wmsWmtsLayersRef,
               projectionCode,
               highlightSource,
+              parentLayer: layer, // for BBox fallback
             });
+
             if (handled?.layerToZoom && !layerToZoom)
               layerToZoom = handled.layerToZoom;
 
-            // If we just activated a parent AND the parent has radio-style children,
-            // auto-activate the first style-child (so a visible style appears on the map).
+            // auto-activate first radio-style child if parent checkbox activated
             if (
               handled.active &&
               layer.children?.some((c) => c.inputType === "radio")
@@ -266,8 +424,6 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
                 (c) => c.inputType === "radio"
               );
               if (firstChild) {
-                ensureSource(firstChild, layer.url || parentUrl);
-                // add map layer for the first child
                 const handledChild = handleLayerActive({
                   parent: { ...firstChild, active: true },
                   mapInstance,
@@ -276,15 +432,17 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
                   wmsWmtsLayersRef,
                   projectionCode,
                   highlightSource,
+                  parentLayer: layer,
                 });
+
                 if (handledChild?.layerToZoom && !layerToZoom)
                   layerToZoom = handledChild.layerToZoom;
 
-                // reflect children active states in returned data
                 const newChildren = layer.children.map((c) => ({
                   ...c,
                   active: c.id === firstChild.id,
                 }));
+
                 return { ...handled, children: newChildren };
               }
             }
@@ -292,12 +450,8 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
             return { ...handled, children: layer.children };
           }
 
-          // --------------------
-          // 3) RADIO clicked on a layer that itself is a radio-type (a child-style node)
-          //    -> activate this child and let parent remain active
-          // --------------------
+          // RADIO clicked on a radio child node
           if (inputType === "radio" && layer.inputType === "radio") {
-            // Activate this child on the map
             const handledChild = handleLayerActive({
               parent: { ...layer, active: true },
               mapInstance,
@@ -306,10 +460,10 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
               wmsWmtsLayersRef,
               projectionCode,
               highlightSource,
+              parentLayer: parent, // for BBox fallback
             });
             if (handledChild?.layerToZoom && !layerToZoom)
               layerToZoom = handledChild.layerToZoom;
-            // mark the child active in state
             return { ...layer, active: true, children: layer.children };
           }
 
@@ -318,18 +472,13 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
 
         // Recurse children
         if (layer.children?.length) {
-          // special-case: target is one of this node's children and we clicked a radio:
-          //   -> set this parent active, set only the chosen child active, deactivate others,
-          //      and update map layers accordingly.
           if (
             inputType === "radio" &&
             layer.children.some((c) => c.id === layerId)
           ) {
-            // ensure parent remains active
             const newChildren = layer.children.map((c) => {
               if (c.id === layerId) {
                 ensureSource(c, c.url || layer.url || parentUrl);
-                // activate newly selected child on the map
                 const handledSel = handleLayerActive({
                   parent: { ...c, active: true },
                   mapInstance,
@@ -338,12 +487,12 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
                   wmsWmtsLayersRef,
                   projectionCode,
                   highlightSource,
+                  parentLayer: layer,
                 });
                 if (handledSel?.layerToZoom && !layerToZoom)
                   layerToZoom = handledSel.layerToZoom;
                 return { ...c, active: true };
               } else {
-                // if sibling was active, deactivate it on the map
                 if (c.active) {
                   handleLayerActive({
                     parent: { ...c, active: false },
@@ -358,11 +507,9 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
                 return { ...c, active: false };
               }
             });
-
             return { ...layer, active: true, children: newChildren };
           }
 
-          // otherwise normal recursion
           return {
             ...layer,
             children: toggleLayerById(
@@ -377,7 +524,6 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
       });
     };
 
-    // apply update to the correct group
     setDataLayers((prevGroups) =>
       prevGroups.map((group) =>
         group.id === groupId
@@ -392,6 +538,7 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
     if (layerToZoom)
       requestAnimationFrame(() => zoomToLayer(mapInstance, layerToZoom));
   };
+
   // ----------------------------
   // Click handler debug helper
   // ----------------------------

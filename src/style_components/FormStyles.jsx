@@ -64,3 +64,19 @@ export function Switch({ checked, onChange, disabled /*, label */ }) {
 }
 
 /*------------------------------------------------------------------------------------------------------------------------*/
+
+export const FieldRow = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  column-gap: 150px;
+  align-items: start;
+  border-bottom: ${(props) => (props.$isLast ? "none" : "1px solid #a3a3a3ff")};
+  padding: 15px 10px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #aab9dc; // subtle light gray on hover
+    color: #fff;
+    border-bottom: ${(props) => (props.$isLast ? "none" : "1px solid #aab9dc")};
+  }
+`;

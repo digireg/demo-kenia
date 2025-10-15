@@ -30,6 +30,22 @@ export const backgroundLayersConfig = {
       attribution: "© PDOK",
       tileGridFunc: createPdokTileGrid28992,
     },
+
+    /* Same as PDOK Luchtfoto */
+    // NL_Actueel_ortho25: {
+    //   id: "NL_Actueel_ortho25",
+    //   title: "Luchtfoto 2025 Ortho",
+    //   type: "WMS",
+    //   url: "https://service.pdok.nl/hwh/luchtfotorgb/wms/v1_0?",
+    //   params: {
+    //     LAYERS: "Actueel_ortho25",
+    //     FORMAT: "image/png",
+    //     TILED: true,
+    //   },
+    //   serverType: "geoserver",
+    //   version: "1.3.0",
+    //   attribution: "© PDOK",
+    // },
   },
 
   "EPSG:3857": {

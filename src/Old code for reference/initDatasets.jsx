@@ -1,6 +1,6 @@
 // initDatasets.js
 import { DATASET_CONFIG } from "../config/datasetConfig";
-import { loadWMSLayers } from "./wmsLoader";
+import { loadWMSLayers } from "../utils/wmsLoader";
 // import { loadWMTSLayers } from "./wmtsLoader"; // if you add WMTS loader later
 
 export async function initDatasets() {
