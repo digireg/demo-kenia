@@ -9,7 +9,7 @@ export { PanelHeader } from "./atoms/PanelHeader";
 export { PreviewTile } from "./atoms/PreviewTile";
 export { default as OpacitySlider } from "./atoms/Slider";
 export { Switch } from "./atoms/Switch";
-export { TileThumbnail } from "./atoms/tileThumbnail";
+export { TileThumbnail } from "./atoms/TileThumbnail";
 export { Header } from "./atoms/Header";
 export { TopRow } from "./atoms/TopRow";
 export { TitleGroup } from "./atoms/TitleGroup";
