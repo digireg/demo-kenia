@@ -7,7 +7,7 @@ import {
   PreviewGrid,
   PreviewTile,
   TileThumbnail,
-} from "../style_components/MeasurementContainerStyle";
+} from "../style_components";
 import { TbPolygon } from "react-icons/tb";
 import { FaRuler } from "react-icons/fa";
 import { TiImageOutline } from "react-icons/ti";

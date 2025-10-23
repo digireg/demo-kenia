@@ -3,7 +3,7 @@ import {
   ZoomControlContainer,
   ZoomInButton,
   ZoomOutButton,
-} from "../style_components/ZoomControlStyle";
+} from "../style_components";
 import { FiPlus, FiMinus } from "react-icons/fi";
 
 export default function ZoomControl({ mapRef }) {

@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import Spinner from "../style_components/Spinner";
+import Spinner from "../atoms/Spinner";
+import { tokens, components } from "../themes/light";
 
 const LayerWrapper = styled.div`
   margin-bottom: 10px;
@@ -9,7 +10,7 @@ const LayerWrapper = styled.div`
 const LayerRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${tokens.space[2]};
   margin-left: ${({ $level }) => $level * 20}px;
 `;
 
@@ -30,148 +31,11 @@ const StylesRow = styled.div`
 
 const StyleLabel = styled.label`
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: ${tokens.fontSizes[3]};
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${tokens.space[1]};
 `;
-
-// export const renderLayer = (
-//   layer,
-//   groupId,
-//   level = 0,
-//   parentActive = true,
-//   onToggleLayer,
-//   loadingLayers,
-//   parentId = null,
-//   activeStyles = {}
-// ) => {
-//   const inputId = `input-${layer.key || layer.id}`;
-//   const isRadioInput = layer.inputType === "radio";
-
-//   // If parent is inactive, force child inactive visually
-//   const effectiveActive = parentActive && !!layer.active;
-
-//   // Compute style value for radio groups
-//   let radioValue;
-//   if (isRadioInput) {
-//     radioValue = activeStyles[layer.id] || layer.styles?.[0]?.name || layer.id;
-//   }
-
-//   return (
-//     <LayerWrapper key={inputId}>
-//       <LayerRow $level={level}>
-//         <input
-//           id={inputId}
-//           type={isRadioInput ? "radio" : "checkbox"}
-//           name={isRadioInput ? `style-${parentId || layer.id}` : undefined}
-//           value={isRadioInput ? radioValue : undefined}
-//           checked={!!layer.active}
-//           disabled={!!loadingLayers[`${groupId}:${layer.id}`]}
-//           onChange={() =>
-//             onToggleLayer(
-//               groupId,
-//               layer.id,
-//               isRadioInput ? "radio" : "checkbox",
-//               radioValue,
-//               parentId
-//             )
-//           }
-//         />
-//         <label htmlFor={inputId}>{layer.title || "Untitled"}</label>
-//         {loadingLayers[`${groupId}:${layer.id}`] && <Spinner size={14} />}
-//       </LayerRow>
-//       {/* === Render WMS styles (radio buttons) === */}
-
-//       {(() => {
-//         const isParentActive = parentActive; // passed down from parent
-//         const isLayerActive = !!layer.active; // this layer checkbox
-//         const hasMultipleStyles =
-//           Array.isArray(layer.styles) && layer.styles.length > 1;
-//         const hasSelectedStyle = !!activeStyles[layer.id];
-
-//         // Strictest conditions: only show radios if parent & self active and a style is selected
-//         const shouldRenderRadios =
-//           isParentActive &&
-//           isLayerActive &&
-//           hasMultipleStyles &&
-//           hasSelectedStyle;
-
-//         {
-//           /* console.log(
-//           "[RenderLayerStyle] radios visible?",
-//           shouldRenderRadios,
-//           "→ parentActive:",
-//           isParentActive,
-//           "layerActive:",
-//           isLayerActive,
-//           "styles:",
-//           layer.styles?.length,
-//           "activeStyle:",
-//           activeStyles[layer.id]
-//         ); */
-//         }
-
-//         // Skip entirely if not active or if only one style (UX polish)
-//         if (!shouldRenderRadios || layer.styles.length <= 1) return null;
-
-//         return (
-//           <StylesRow $level={level}>
-//             {layer.styles.map((style) => (
-//               <StyleLabel key={style.name}>
-//                 <input
-//                   type="radio"
-//                   name={`style-${layer.id}`}
-//                   value={style.name}
-//                   checked={activeStyles[layer.id] === style.name}
-//                   onChange={() =>
-//                     onToggleLayer(
-//                       groupId,
-//                       style.id,
-//                       "radio",
-//                       style.name,
-//                       layer.id
-//                     )
-//                   }
-//                 />
-//                 {style.title || style.name}
-//               </StyleLabel>
-//             ))}
-//           </StylesRow>
-//         );
-//       })()}
-
-//       {layer.children?.length > 0 &&
-//         (() => {
-//           // Pre-calculate once
-//           const radioChildren =
-//             layer.children?.filter((c) => c.inputType === "radio") || [];
-//           const parentHasMultipleStyles = radioChildren.length > 1;
-
-//           return (
-//             layer.children
-//               // Hide radios unless parent active AND parent has >1 style option
-//               .filter((child) => {
-//                 if (child.inputType !== "radio") return true;
-//                 return parentActive && layer.active && parentHasMultipleStyles;
-//               })
-//               .map((child) =>
-//                 renderLayer(
-//                   child,
-//                   groupId,
-//                   level + 1,
-//                   parentActive && layer.active,
-//                   onToggleLayer,
-//                   loadingLayers,
-//                   layer.id,
-//                   activeStyles
-//                 )
-//               )
-//           );
-//         })()}
-//     </LayerWrapper>
-//   );
-// };
 
 export const renderLayer = (
   layer,

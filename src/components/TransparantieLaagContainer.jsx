@@ -3,10 +3,10 @@ import { FiEye } from "react-icons/fi";
 import {
   TransparantieLaagContainer,
   TransparantieLaagPanel,
-  FilterInput,
+  TextInput,
   NoResults,
-} from "../style_components/TransparantieLaagContainerStyle";
-import OpacitySlider from "../style_components/Slider";
+  OpacitySlider,
+} from "../style_components";
 import { flattenDataLayers } from "./flattenDataLayers";
 
 export default function TransparantieLaagSelect({
@@ -68,7 +68,7 @@ export default function TransparantieLaagSelect({
             <FiEye style={{ fontSize: "20px" }} />
             <h1>Layer opacity</h1>
           </div>
-          <FilterInput
+          <TextInput
             id="filterTransparatieLagen"
             type="text"
             placeholder="Filter layers..."

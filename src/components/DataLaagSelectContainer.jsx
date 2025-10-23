@@ -1,24 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FiLayers } from "react-icons/fi";
-import { Switch } from "../style_components/FormStyles";
-import Accordion from "../style_components/Accordion";
-import { renderLayer } from "../style_components/RenderLayerStyle";
 import { DATASET_CONFIG } from "../config/datasetConfig";
 
 import {
+  Switch,
+  Accordion,
+  renderLayer,
   DataLaagSelectContainer,
   DataLaagSelectPanel,
   Header,
   TopRow,
   TitleGroup,
   SwitchGroup,
-  FilterInput,
+  TextInput,
   Content,
   BottomSpacer,
   NoResults,
-} from "../style_components/DataLaagSelectContainerStyle";
-
-import Spinner from "../style_components/Spinner";
+} from "../style_components";
 
 // Utility to fetch and parse WMS capabilities
 async function fetchWMSCapabilities(url) {
@@ -433,7 +431,7 @@ export default function DataLaagSelect({
             </SwitchGroup>
           </TopRow>
 
-          <FilterInput
+          <TextInput
             type="text"
             placeholder="Filter layers..."
             value={filterQuery}

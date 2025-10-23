@@ -3,8 +3,8 @@ import {
   SideMenu,
   SideBarIconContainer,
   SideBarMenuIconContainer,
-} from "../style_components/SidebarMenuStyle";
-import { NavButton } from "../style_components/Buttons"; // adjust if needed
+  NavButton,
+} from "../style_components";
 import { FiSidebar, FiMap, FiLayers, FiEye, FiFilter } from "react-icons/fi";
 import { FaRuler } from "react-icons/fa";
 import { MdLabel } from "react-icons/md";

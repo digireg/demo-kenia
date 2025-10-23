@@ -1,16 +1,17 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
+import { tokens, components } from "../themes/light";
 
 const SliderWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: ${tokens.space[5]};
   width: 100%;
 
   &:not(:last-child) {
-    border-bottom: 1px solid #e0e0e0;
-    padding-bottom: 30px;
-    margin-bottom: 30px;
+    border-bottom: 1px solid ${tokens.colors.Company.Secondary};
+    padding-bottom: ${tokens.space[6]};
+    margin-bottom: ${tokens.space[6]};
   }
 `;
 
@@ -21,29 +22,32 @@ const TopRow = styled.div`
 `;
 
 const Label = styled.label`
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
+  font-size: ${tokens.fontSizes[3]};
+  font-weight: ${tokens.fontWeights.medium};
+  color: ${tokens.colors.grays[800]};
 `;
 
 const InputGroup = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${tokens.space[1]};
 `;
 
 const NumberInput = styled.input`
   width: 50px;
   text-align: right;
+  padding: ${tokens.space[2]} ${tokens.space[1]};
+  border-radius: ${tokens.radii[2]};
+  border: ${tokens.colors.black} solid 1px;
 `;
 
-const Slider = styled.input.attrs({ type: 'range' })`
+const Slider = styled.input.attrs({ type: "range" })`
   -webkit-appearance: none;
   width: 100%;
   height: 4px;
-  border-radius: 2px;
+  border-radius: ${tokens.radii[1]};
   background: ${({ value }) =>
-    `linear-gradient(to right, #284f97 0%, #284f97 ${value}%, #f0f4fa ${value}%, #f0f4fa 100%)`};
+    `linear-gradient(to right, ${tokens.colors.Company.Primary} 0%, ${tokens.colors.Company.Primary} ${value}%, ${tokens.colors.Company.Secondary} ${value}%, ${tokens.colors.Company.Secondary} 100%)`};
   outline: none;
   margin: 0;
   padding: 0;
@@ -56,12 +60,12 @@ const Slider = styled.input.attrs({ type: 'range' })`
     appearance: none;
     width: 14px;
     height: 14px;
-    border-radius: 50%;
-    background: #284f97;
+    border-radius: ${tokens.radii[4]};
+    background: ${tokens.colors.Company.Primary};
     border: none;
     transition: background 0.2s ease;
     position: relative;
-    top: 50%;
+    top: ${tokens.radii[4]};
     transform: translateY(var(--thumb-offset));
   }
 
@@ -69,33 +73,37 @@ const Slider = styled.input.attrs({ type: 'range' })`
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #284f97;
+    background: ${tokens.colors.Company.Primary};
     border: none;
     transition: background 0.2s ease;
     position: relative;
-    top: 50%;
+    top: ${tokens.radii[4]};
     transform: translateY(var(--thumb-offset));
   }
 
   &:hover::-webkit-slider-thumb {
-    background: #1f3f7c;
+    background: ${tokens.colors.Company.Primary};
   }
 
   &::-moz-range-track {
     background: transparent;
   }
   &::-moz-range-progress {
-    background: #284f97;
+    background: ${tokens.colors.Company.Primary};
     height: 4px;
-    border-radius: 2px;
+    border-radius: ${tokens.radii[1]};
   }
 
   &:hover::-moz-range-thumb {
-    background: #1f3f7c;
+    background: ${tokens.colors.Company.Primary};
   }
 `;
 
-export default function OpacitySlider({ label = 'Layer Transparency', value = 100, onChange }) {
+export default function OpacitySlider({
+  label = "Layer Transparency",
+  value = 100,
+  onChange,
+}) {
   // Handle slider change event and notify parent with new value
   const handleSliderChange = (e) => {
     const newValue = Number(e.target.value);

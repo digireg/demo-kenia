@@ -5,7 +5,7 @@ import {
   Spinner,
   SuggestionsList,
   SuggestionItem,
-} from "../style_components/MapStyle";
+} from "../style_components";
 
 export default function SearchBar({ onSearchResult }) {
   const [query, setQuery] = useState("");

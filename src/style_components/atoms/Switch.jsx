@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { tokens, components } from "../themes/light";
 
 const SwitchLabel = styled.label`
   display: inline-flex;
@@ -13,11 +14,12 @@ const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
   height: 0;
 
   &:checked + span {
-    background-color: #284f97;
+    background-color: ${tokens.colors.Company.Primary};
   }
 
   &:checked + span::before {
     transform: translateX(15px);
+    border: 1px solid ${tokens.colors.Company.Primary};
   }
 
   &:disabled + span {
@@ -43,7 +45,7 @@ const Slider = styled.span`
     bottom: 0;
     background-color: white;
     border-radius: 50%;
-    border: 1px solid #f5f5f5
+    border: 1px solid ${tokens.colors.grays[500]};
     transition: transform 0.4s;
   }
 `;
@@ -62,21 +64,3 @@ export function Switch({ checked, onChange, disabled /*, label */ }) {
     </SwitchLabel>
   );
 }
-
-/*------------------------------------------------------------------------------------------------------------------------*/
-
-export const FieldRow = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  column-gap: 150px;
-  align-items: start;
-  border-bottom: ${(props) => (props.$isLast ? "none" : "1px solid #a3a3a3ff")};
-  padding: 15px 10px;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: #aab9dc; // subtle light gray on hover
-    color: #fff;
-    border-bottom: ${(props) => (props.$isLast ? "none" : "1px solid #aab9dc")};
-  }
-`;

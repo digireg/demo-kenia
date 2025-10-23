@@ -1,5 +1,4 @@
-//v2 background map test
-// src/components/Map.jsx
+//v2 map.jsx
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import "ol/ol.css";
 import { Map, View } from "ol";
@@ -11,20 +10,21 @@ import WMTS from "ol/source/WMTS";
 import { ScaleLine, Attribution } from "ol/control";
 import GeoJSON from "ol/format/GeoJSON";
 import WMSGetFeatureInfo from "ol/format/WMSGetFeatureInfo";
+import { toast } from "react-toastify";
 
 import {
   MapContainer,
   FloatingSearch,
   MapStyleContainer,
-} from "../style_components/MapStyle";
-import GlobalStyle from "../style_components/GlobalStyle";
+  GlobalStyle,
+} from "../style_components";
 
 import AchtergrondLaag from "./AchtergrondLaagContainer";
 import TransparantieLaagSelect from "./TransparantieLaagContainer";
 import DataLaagSelect from "./DataLaagSelectContainer";
 import LaagData from "./LaagData";
 import Measurement from "./MeasurementContainer";
-import DataLabel from "./DataLabelContainer (not in use)";
+// import DataLabel from "./DataLabelContainer (not in use)";
 import ZoomControl from "./ZoomControl";
 import SearchBar from "./Searchbar";
 import Legend from "./Legend";
@@ -398,10 +398,59 @@ export default function OLMap({
       // ----------------------------------------
       // Fetch features for a given WMS layer
       // ----------------------------------------
+      // const getFeaturesFromWMS = async (layer) => {
+      //   const source = wmsWmtsLayersRef.current[layer.id];
+      //   if (!source) {
+      //     console.warn(`[WMS] No source found for layer: ${layer.id}`);
+      //     return null;
+      //   }
+
+      //   for (const format of INFO_FORMATS) {
+      //     try {
+      //       const url = getWMSFeatureInfoUrlDebug(
+      //         layer,
+      //         coordinate,
+      //         resolution,
+      //         view.getProjection().getCode()
+      //       );
+      //       if (!url) continue;
+
+      //       const res = await fetch(url);
+      //       const text = await res.text();
+      //       if (!text.trim()) continue;
+
+      //       if (format.includes("json") && text.trim().startsWith("{")) {
+      //         const json = JSON.parse(text);
+      //         if (json?.features?.length > 0) {
+      //           return new GeoJSON().readFeatures(json, {
+      //             featureProjection: view.getProjection(),
+      //           });
+      //         }
+      //       } else {
+      //         const parsedFeatures = new WMSGetFeatureInfo().readFeatures(
+      //           text,
+      //           {
+      //             featureProjection: view.getProjection(),
+      //           }
+      //         );
+      //         if (parsedFeatures?.length) return parsedFeatures;
+      //       }
+      //     } catch (err) {
+      //       console.warn(
+      //         `[WMS] GetFeatureInfo failed for layer ${layer.id}`,
+      //         err
+      //       );
+      //       continue;
+      //     }
+      //   }
+      //   return null;
+      // };
+
       const getFeaturesFromWMS = async (layer) => {
         const source = wmsWmtsLayersRef.current[layer.id];
         if (!source) {
           console.warn(`[WMS] No source found for layer: ${layer.id}`);
+          toast.warning(`Layer source not found: ${layer.id}`);
           return null;
         }
 
@@ -416,6 +465,19 @@ export default function OLMap({
             if (!url) continue;
 
             const res = await fetch(url);
+
+            // If server responds with error (status >= 400)
+            if (!res.ok) {
+              toast.error(
+                `[WMS] Server error fetching features for layer ${layer.id}: ${res.status} ${res.statusText}`
+              );
+              console.warn(
+                `[WMS] GetFeatureInfo failed for layer ${layer.id}`,
+                res
+              );
+              return null; // exit early
+            }
+
             const text = await res.text();
             if (!text.trim()) continue;
 
@@ -440,9 +502,11 @@ export default function OLMap({
               `[WMS] GetFeatureInfo failed for layer ${layer.id}`,
               err
             );
+            toast.error(`[WMS] Error fetching features for layer ${layer.id}`);
             continue;
           }
         }
+
         return null;
       };
 
@@ -485,6 +549,7 @@ export default function OLMap({
         setActivePanel("laagdata");
       } else {
         console.log("[Click] No feature found on click");
+        // toast.info("No feature found.");
         setSelectedFeature(null);
         setActivePanel(null);
       }
@@ -647,7 +712,7 @@ export default function OLMap({
         onSelectTool={handleSelectTool}
       />
 
-      <DataLabel dataLayers={dataLayers} />
+      {/* <DataLabel dataLayers={dataLayers} />*/}
       <Legend activeLayers={activeLegendLayers} />
     </MapContainer>
   );

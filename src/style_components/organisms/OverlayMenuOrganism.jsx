@@ -1,3 +1,4 @@
+// style_components/organisms/OverlayMenuOrganism.jsx
 import React from "react";
 import {
   Overlay,
@@ -10,7 +11,7 @@ import {
   OverlayMenuDashboardSection,
   Logo,
   NavButton,
-} from "../style_components";
+} from "..";
 import {
   FiX,
   FiMap,
@@ -24,18 +25,7 @@ import {
 import { FaRuler } from "react-icons/fa";
 import { MdLabel, MdLanguage } from "react-icons/md";
 
-export default function OverlayMenu({
-  isOpen,
-  onClose,
-  onOpenOverlay,
-  activePanel,
-  setActivePanel,
-}) {
-  const handleOpenPanel = (panelName) => {
-    setActivePanel(activePanel === panelName ? null : panelName);
-    onClose();
-  };
-
+const OverlayMenuOrganism = ({ isOpen, onClose, onOpenPanel, activePanel }) => {
   return (
     <>
       <Overlay $isOpen={isOpen} onClick={onClose} />
@@ -46,59 +36,53 @@ export default function OverlayMenu({
             <FiX />
           </CloseButton>
         </OverlayMenuHeader>
+
         <OverlayMenuToolsSection>
           <NavButton
             icon={<FiMap />}
-            onClick={() => handleOpenPanel("achtergrond")}
+            onClick={() => onOpenPanel("achtergrond")}
           >
             Background layers
           </NavButton>
 
-          <NavButton
-            icon={<FiLayers />}
-            onClick={() => handleOpenPanel("lagen")}
-          >
+          <NavButton icon={<FiLayers />} onClick={() => onOpenPanel("lagen")}>
             Data layers
           </NavButton>
 
           <NavButton
             icon={<FiEye />}
-            onClick={() => handleOpenPanel("transparantie")}
+            onClick={() => onOpenPanel("transparantie")}
           >
             Layer Opacity
           </NavButton>
 
-          <NavButton
-            icon={<FaRuler />}
-            onClick={() => handleOpenPanel("metingen")}
-          >
+          <NavButton icon={<FaRuler />} onClick={() => onOpenPanel("metingen")}>
             Measuring tools
           </NavButton>
 
-          <NavButton
-            icon={<FiFilter />}
-            onClick={() => handleOpenPanel("filter")}
-          >
+          <NavButton icon={<FiFilter />} onClick={() => onOpenPanel("filter")}>
             Filters
           </NavButton>
 
-          <NavButton
-            icon={<MdLabel />}
-            onClick={() => handleOpenPanel("labels")}
-          >
+          <NavButton icon={<MdLabel />} onClick={() => onOpenPanel("labels")}>
             Label settings
           </NavButton>
         </OverlayMenuToolsSection>
+
         <OverlayMenuUtilsSection>
           <NavButton icon={<FiLink2 />}>Share</NavButton>
           <NavButton icon={<FiPrinter />}>Print settings</NavButton>
         </OverlayMenuUtilsSection>
+
         <OverlayMenuSettingsSection>
           <NavButton icon={<FiHelpCircle />}>Manuals</NavButton>
           <NavButton icon={<MdLanguage />}>Language</NavButton>
         </OverlayMenuSettingsSection>
-        <OverlayMenuDashboardSection></OverlayMenuDashboardSection>
+
+        <OverlayMenuDashboardSection />
       </Drawer>
     </>
   );
-}
+};
+
+export default OverlayMenuOrganism;

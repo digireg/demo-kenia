@@ -9,7 +9,7 @@ import {
   PreviewGrid,
   PreviewTile,
   TileThumbnail,
-} from "../style_components/AchtergrondLaagContainerStyle";
+} from "../style_components";
 import { FiMap } from "react-icons/fi";
 import { backgroundLayersConfig } from "../config/backgroundLayersConfig";
 

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import OLMap from "./components/Map";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 import { Helmet } from "react-helmet";
-import { Layout } from "./style_components/Layout";
 import MenuContainer from "./components/MenuContainer";
 
 export default function App() {
@@ -19,7 +20,7 @@ export default function App() {
     useState("openstreet");
 
   return (
-    <Layout>
+    <>
       {/* Helmet manages document <head>, e.g. adding Google Fonts */}
       <Helmet>
         <link
@@ -41,6 +42,17 @@ export default function App() {
         activeBackgroundLayer={activeBackgroundLayer}
         setActiveBackgroundLayer={setActiveBackgroundLayer}
       />
-    </Layout>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000} // 5 seconds
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+    </>
   );
 }

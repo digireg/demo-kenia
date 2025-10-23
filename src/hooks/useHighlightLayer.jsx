@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Vector as VectorLayer } from "ol/layer";
 import { Vector as VectorSource } from "ol/source";
 import { Style, Fill, Stroke } from "ol/style";
+import { tokens, components } from "../style_components/themes/light";
 
 export default function useHighlightLayer() {
   const highlightSource = useMemo(() => new VectorSource(), []);
@@ -10,8 +11,11 @@ export default function useHighlightLayer() {
       new VectorLayer({
         source: highlightSource,
         style: new Style({
-          stroke: new Stroke({ color: "#284F97", width: 2 }),
-          fill: new Fill({ color: "#e3e9f5" }),
+          stroke: new Stroke({
+            color: tokens.colors.Company.Secondary,
+            width: 2,
+          }),
+          fill: new Fill({ color: tokens.colors.Company.Primary }),
         }),
         zIndex: 999,
       }),

@@ -1,4 +1,5 @@
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from "styled-components";
+import { tokens, components } from "./themes/light";
 
 const GlobalStyle = createGlobalStyle`
 
@@ -10,17 +11,16 @@ const GlobalStyle = createGlobalStyle`
     height:100%;
     margin:0;
     padding:0;
-      box-sizing: border-box;
-      font-size:16px;
+    box-sizing: border-box;
+    font-size:${tokens.fontSizes[3]};
   }
 
   body {
     margin: 0;
     font-family: Inter, sans-serif;
-    background-color: #282726;
+    background-color: ${tokens.colors.white};
     max-width:100vw;
     height:100vh;
-    ${'' /* padding:20px 30px; */}
   }
 
 
@@ -43,7 +43,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   p{
-    font-size:14px;
+    font-size:${tokens.fontSizes[3]};
   }
 
 
@@ -54,7 +54,7 @@ const GlobalStyle = createGlobalStyle`
   bottom: 10px !important;
   transform: translate(-50%, -10px);
   color: #000;
-  font-size: 12px;
+  font-size:${tokens.fontSizes[3]};
   padding: 2px 6px;
   border-radius: 4px;
   z-index: 1000;
@@ -63,7 +63,5 @@ const GlobalStyle = createGlobalStyle`
 
 
 `;
-
-
 
 export default GlobalStyle;
