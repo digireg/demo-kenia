@@ -9,8 +9,10 @@ import {
   TileThumbnail,
 } from "../style_components";
 import { TbPolygon } from "react-icons/tb";
-import { FaRuler } from "react-icons/fa";
+import { FaRuler, FaStopCircle } from "react-icons/fa";
 import { TiImageOutline } from "react-icons/ti";
+import { AiOutlineClear } from "react-icons/ai";
+import { MdDelete } from "react-icons/md";
 
 export default function Measurement({ isOpen, setActivePanel, onSelectTool }) {
   const panelRef = useRef(null); // Ref to detect clicks outside panel
@@ -31,17 +33,17 @@ export default function Measurement({ isOpen, setActivePanel, onSelectTool }) {
     {
       id: "stopMeting",
       name: "Stop measurement",
-      Icon: TiImageOutline,
+      Icon: FaStopCircle,
     },
     {
       id: "wisMeting",
       name: "Clear measurement",
-      Icon: TiImageOutline,
+      Icon: AiOutlineClear,
     },
     {
       id: "stopEnWisMeting",
       name: "Stop and clear measurement",
-      Icon: TiImageOutline,
+      Icon: MdDelete,
     },
   ];
 

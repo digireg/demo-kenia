@@ -75,7 +75,7 @@ export default function OverlayMenu({
             Measuring tools
           </NavButton>
 
-          <NavButton
+          {/* <NavButton
             icon={<FiFilter />}
             onClick={() => handleOpenPanel("filter")}
           >
@@ -87,7 +87,7 @@ export default function OverlayMenu({
             onClick={() => handleOpenPanel("labels")}
           >
             Label settings
-          </NavButton>
+          </NavButton> */}
         </OverlayMenuToolsSection>
         <OverlayMenuUtilsSection>
           <NavButton icon={<FiLink2 />}>Share</NavButton>

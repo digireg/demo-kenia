@@ -60,7 +60,7 @@ export default function SideBarMenu({
         >
           Metingen
         </NavButton>
-        <NavButton icon={<FiFilter />} hideText>
+        {/* <NavButton icon={<FiFilter />} hideText>
           Algemene Filter
         </NavButton>
         <NavButton
@@ -71,7 +71,7 @@ export default function SideBarMenu({
           }
         >
           Labelinstellingen
-        </NavButton>
+        </NavButton> */}
       </SideBarMenuIconContainer>
     </SideMenu>
   );

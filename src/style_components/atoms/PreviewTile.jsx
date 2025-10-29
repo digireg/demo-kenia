@@ -8,13 +8,13 @@ export const PreviewTile = styled.div`
   gap: ${tokens.space[3]};
   width: 100%;
   max-width: 150px;
-  height: auto;
+  height: 175px;
   padding: ${tokens.space[3]};
   border-radius: 5px;
   border: 1px solid
     ${({ $active }) =>
       $active ? tokens.colors.Company.Primary : tokens.colors.grays[300]};
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   cursor: pointer;
   transition: border-color 0.2s;
