@@ -3,10 +3,14 @@ import { useState, useEffect, useRef } from "react";
 import useDataLayerFetch from "../hooks/UseDataLayerFetch";
 import useNormalizeLayers from "../hooks/useNormalizeLayers";
 import TileWMS from "ol/source/TileWMS";
+import { Tile } from "ol/layer";
+import { get as getProjection } from "ol/proj";
+import GeoJSON from "ol/format/GeoJSON";
 import { handleLayerActive } from "../utils/handleLayerActive";
 import { addMapLayer } from "../utils/addMapLayer";
 import { updateLayerOpacity } from "../utils/updateLayerOpacity";
 import { zoomToLayer } from "../utils/zoomToLayer";
+import { toast } from "react-toastify";
 
 export default function useMapLayers({ projectionCode, highlightSource }) {
   const { dataLayers: fetchedDataLayers, loading, error } = useDataLayerFetch();
@@ -542,17 +546,59 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
   // ----------------------------
   // Click handler debug helper
   // ----------------------------
+  // const getWMSFeatureInfoUrlDebug = (
+  //   layer,
+  //   coordinate,
+  //   resolution,
+  //   projectionCode
+  // ) => {
+  //   const source = wmsWmtsLayersRef.current[layer.id];
+  //   if (!source) {
+  //     console.warn("[DEBUG] No WMS source for layer:", layer.id);
+  //     return null;
+  //   }
+
+  //   const url = source.getFeatureInfoUrl(
+  //     coordinate,
+  //     resolution,
+  //     projectionCode,
+  //     {
+  //       INFO_FORMAT: "application/json",
+  //       QUERY_LAYERS: layer.wmsLayerName || layer.id,
+  //       FEATURE_COUNT: 10,
+  //     }
+  //   );
+
+  //   console.log("[DEBUG] getFeatureInfoUrl for layer:", layer.id, { url });
+  //   return url;
+  // };
+
+  /**
+   * Returns a proper GetFeatureInfo URL for a WMS layer, handling style-only IDs.
+   * Automatically uses the parent WMS layer if the active style is a style ID.
+   *
+   * @param {Object} layer - The parent layer object (from your layer config)
+   * @param {Array<number>} coordinate - Map click coordinate
+   * @param {number} resolution - Map resolution
+   * @param {string} projectionCode - EPSG code of the map view
+   * @param {Object} activeStyles - Object mapping layerId → style ID (if any)
+   * @returns {string|null} - FeatureInfo URL or null if unavailable
+   */
   const getWMSFeatureInfoUrlDebug = (
     layer,
     coordinate,
     resolution,
     projectionCode
   ) => {
+    // get the real source
     const source = wmsWmtsLayersRef.current[layer.id];
     if (!source) {
       console.warn("[DEBUG] No WMS source for layer:", layer.id);
       return null;
     }
+
+    // use the actual WMS layer name, fallback to layer.id
+    const wmsLayer = layer.wmsLayerName || layer.id;
 
     const url = source.getFeatureInfoUrl(
       coordinate,
@@ -560,15 +606,100 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
       projectionCode,
       {
         INFO_FORMAT: "application/json",
-        QUERY_LAYERS: layer.wmsLayerName || layer.id,
+        QUERY_LAYERS: wmsLayer, // 👈 important: real WMS name
         FEATURE_COUNT: 10,
       }
     );
 
-    console.log("[DEBUG] getFeatureInfoUrl for layer:", layer.id, { url });
+    console.log("[DEBUG] getFeatureInfoUrl for layer:", layer.id, {
+      wmsLayer,
+      url,
+    });
     return url;
   };
 
+  // const getFeaturesFromWMTS = async (layer, evt) => {
+  //   const source = wmsWmtsLayersRef.current[layer.id];
+  //   if (!source) {
+  //     console.warn(`[WMTS] No source found for layer: ${layer.id}`);
+  //     toast.warning(`Layer source not found: ${layer.id}`);
+  //     return null;
+  //   }
+
+  //   try {
+  //     const map = mapInstance.current;
+  //     const view = map.getView();
+  //     const projection = view.getProjection();
+  //     const resolution = view.getResolution();
+  //     const coordinate = evt.coordinate;
+
+  //     // Check if the source supports getFeatureInfoUrl
+  //     if (typeof source.getFeatureInfoUrl === "function") {
+  //       const url = source.getFeatureInfoUrl(
+  //         coordinate,
+  //         resolution,
+  //         projection.getCode(),
+  //         {
+  //           INFO_FORMAT: "application/json",
+  //         }
+  //       );
+
+  //       if (!url) return null;
+
+  //       const res = await fetch(url);
+  //       if (!res.ok) return null;
+
+  //       const json = await res.json();
+  //       if (json?.features?.length) {
+  //         return new GeoJSON().readFeatures(json, {
+  //           featureProjection: projection,
+  //         });
+  //       }
+  //     } else {
+  //       // If getFeatureInfoUrl not available, WMTS doesn't support direct GFI
+  //       // 🔹 Option: fallback to WMS GetFeatureInfo for the same layer
+  //       console.warn(
+  //         `[WMTS] Layer ${layer.id} does not support getFeatureInfoUrl. Trying WMS fallback.`
+  //       );
+
+  //       if (!layer.wmsFallbackUrl || !layer.wmsLayerName) return null;
+
+  //       const size = map.getSize();
+  //       const viewResolution = view.getResolution();
+
+  //       const wmsUrl = `${
+  //         layer.wmsFallbackUrl
+  //       }?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=${
+  //         layer.wmsLayerName
+  //       }&QUERY_LAYERS=${
+  //         layer.wmsLayerName
+  //       }&INFO_FORMAT=application/json&FEATURE_COUNT=10&I=${Math.floor(
+  //         evt.pixel[0]
+  //       )}&J=${Math.floor(evt.pixel[1])}&WIDTH=${size[0]}&HEIGHT=${
+  //         size[1]
+  //       }&CRS=${projection.getCode()}&BBOX=${view
+  //         .calculateExtent(size)
+  //         .join(",")}`;
+
+  //       const res = await fetch(wmsUrl);
+  //       if (!res.ok) return null;
+
+  //       const json = await res.json();
+  //       if (json?.features?.length) {
+  //         return new GeoJSON().readFeatures(json, {
+  //           featureProjection: projection,
+  //         });
+  //       }
+  //     }
+
+  //     return null;
+  //   } catch (err) {
+  //     console.error(`[WMTS] GetFeatureInfo failed for layer ${layer.id}`, err);
+  //     toast.error(`[WMTS] Error fetching features for layer ${layer.id}`);
+  //     return null;
+  //   }
+  // };
+  /*//*/
   // ----------------------------
   // Set layer opacity
   // ----------------------------
@@ -606,5 +737,6 @@ export default function useMapLayers({ projectionCode, highlightSource }) {
     setSelectedFeatureId,
     wmsWmtsLayersRef,
     getWMSFeatureInfoUrlDebug,
+    // getFeaturesFromWMTS,
   };
 }

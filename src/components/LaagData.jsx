@@ -211,7 +211,7 @@ export default function LaagData({
   const activeLayer = featureData[activeTab];
 
   return (
-    <LaagDataContainer>
+    <LaagDataContainer className={isOpen ? "active" : null}>
       <MapButton
         icon={<FaMapMarkedAlt />}
         $active={isOpen}
@@ -229,6 +229,12 @@ export default function LaagData({
         $isOpen={isOpen}
         role="region"
         aria-live="polite"
+        style={{
+          display: isOpen ? "block" : "none",
+          opacity: isOpen ? 1 : 0,
+          transform: isOpen ? "translateY(0)" : "translateY(120%)",
+          transition: "transform 0.3s ease, opacity 0.3s ease",
+        }}
       >
         {featureData.length > 0 ? (
           <>

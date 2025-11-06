@@ -7,6 +7,6 @@ export const Header = styled.header`
   position: sticky;
   top: 0;
   background-color: ${tokens.colors.white};
-  padding: 20px 0;
+  ${"" /* padding: 20px 0; */}
   z-index: 1; /* stay above scrolling content */
 `;

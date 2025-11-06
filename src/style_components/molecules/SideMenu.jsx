@@ -15,4 +15,16 @@ export const SideMenu = styled.aside`
   display: flex;
   flex-direction: column;
   box-shadow: ${tokens.shadows[1]};
+
+  @media (max-width: ${tokens.breakpoints.xs}) {
+    display: none;
+  }
+`;
+
+export const hamburgerMenu = styled.button`
+   {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 `;

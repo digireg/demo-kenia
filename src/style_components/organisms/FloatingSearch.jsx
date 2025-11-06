@@ -14,20 +14,33 @@ const spin = keyframes`
 // === Main floating container ===
 export const FloatingSearch = styled.div`
   position: absolute;
-  top: 20px;
-  left: 90px;
+  top: ${tokens.space[5]};
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 998;
   border-radius: ${tokens.radii[2]};
   box-shadow: ${tokens.shadows[2]};
 
-  form {
-    display: flex;
-    align-items: stretch; /* keeps input and button equal height */
+  @media (min-width: ${tokens.breakpoints.sm}) {
+    left: ${tokens.space[23]};
+    transform: none;
   }
 
-  /* Shared baseline for input + button to guarantee identical metrics */
-  input,
-  button {
+  @media (min-width: ${tokens.breakpoints.md}) {
+    left: ${tokens.space[23]};
+    transform: none;
+  }
+
+  /* === Scoped form === */
+  .map-search-form {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  /* === Input + button scoped inside .search-form only === */
+  .map-search-form input,
+  .map-search-form button {
     box-sizing: border-box;
     font-size: ${tokens.fontSizes[4]};
     line-height: ${tokens.lineHeights.compact};
@@ -37,35 +50,34 @@ export const FloatingSearch = styled.div`
     outline: none;
   }
 
-  /* INPUT: start with transparent border, only show left/top/bottom on hover/focus */
-  input {
-    width: 460px;
-    border: 1px solid transparent; /* invisible baseline */
-    border-right: none; /* remove the right border so the button border is the seam */
+  /* === Input === */
+  .map-search-form input {
+    border: 1px solid transparent;
+    border-right: none;
     border-top-left-radius: ${tokens.radii[2]};
     border-bottom-left-radius: ${tokens.radii[2]};
     background-color: ${tokens.colors.white};
+    width: 75vw;
 
-    /* on input hover/focus -> show primary on three sides */
+    @media (min-width: ${tokens.breakpoints.sm}) {
+      width: 79vw;
+    }
+
+    @media (min-width: ${tokens.breakpoints.md}) {
+      width: 32.5vw;
+    }
+
     &:hover,
     &:focus {
       border-left: 1px solid ${tokens.colors.Company.Primary};
       border-top: 1px solid ${tokens.colors.Company.Primary};
       border-bottom: 1px solid ${tokens.colors.Company.Primary};
-      border-right: none; /* keep seam */
-    }
-
-    /* also support when container is hovered or focus-within */
-    ${
-      /* when parent FloatingSearch is hovered or form focus-within, highlight input too */ ""
-    }
-    ${
-      "" /* We can't directly select parent in CSS, but we can use :focus-within on this component when used in markup */
+      border-right: none;
     }
   }
 
-  /* BUTTON: visible border & colored background (keeps seam consistent) */
-  button {
+  /* === Button === */
+  .map-search-form button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -77,38 +89,22 @@ export const FloatingSearch = styled.div`
     color: ${tokens.colors.white};
     cursor: pointer;
 
-    &:hover {
-      /* visually match input hover (button becomes light, text dark) */
-      background-color: ${tokens.colors.Company.PrimaryLight};
-      color: ${tokens.colors.black};
-      border-color: ${tokens.colors.Company.PrimaryLight};
-    }
-
+    &:hover,
     &:active {
-      background-color: ${tokens.colors.Company.PrimaryLight};
-      color: ${tokens.colors.black};
-      border-color: ${tokens.colors.Company.PrimaryLight};
+      background-color: ${tokens.colors.white};
+      color: ${tokens.colors.Company.Primary};
+      border-color: ${tokens.colors.Company.Primary};
     }
   }
 
-  /* If the whole component is hovered or has keyboard focus within, highlight input
-     (this mirrors your earlier &:hover input, &:focus-within input rules) */
-  &:hover input,
-  &:focus-within input {
-    border-left: 1px solid ${tokens.colors.Company.Primary};
-    border-top: 1px solid ${tokens.colors.Company.Primary};
-    border-bottom: 1px solid ${tokens.colors.Company.Primary};
-    border-right: none;
-  }
-
-  /* Autofill fix */
-  input:-webkit-autofill {
+  /* === Autofill fix (scoped) === */
+  .map-search-form input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px ${tokens.colors.white} inset !important;
     -webkit-text-fill-color: #000 !important;
   }
 `;
 
-// === Wrapper and utility styles ===
+// === Other utilities (unchanged) ===
 export const SearchWrapper = styled.div`
   position: relative;
   width: fit-content;

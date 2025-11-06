@@ -50,6 +50,7 @@ export const ZoomButton = styled(Button)`
   line-height: ${tokens.lineHeights.compact};
   border: 1px solid transparent;
   box-shadow: ${tokens.shadows[2]};
+  background-color: ${tokens.colors.white};
 
   /* Conditional border-radius based on position prop */
   border-radius: ${({ $position }) =>
@@ -65,5 +66,6 @@ export const ZoomButton = styled(Button)`
   &:hover {
     background-color: ${tokens.colors.Company.Primary};
     color: ${tokens.colors.white};
+    border-color: ${tokens.colors.Company.Primary};
   }
 `;

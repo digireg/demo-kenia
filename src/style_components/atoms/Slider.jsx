@@ -60,13 +60,11 @@ const Slider = styled.input.attrs({ type: "range" })`
     appearance: none;
     width: 14px;
     height: 14px;
-    border-radius: ${tokens.radii[4]};
+    border-radius: 50%;
     background: ${tokens.colors.Company.Primary};
     border: none;
     transition: background 0.2s ease;
-    position: relative;
-    top: ${tokens.radii[4]};
-    transform: translateY(var(--thumb-offset));
+    margin-top: -5px; /* center thumb vertically on 4px track (half of thumb minus half of track) */
   }
 
   &::-moz-range-thumb {
@@ -76,22 +74,22 @@ const Slider = styled.input.attrs({ type: "range" })`
     background: ${tokens.colors.Company.Primary};
     border: none;
     transition: background 0.2s ease;
-    position: relative;
-    top: ${tokens.radii[4]};
-    transform: translateY(var(--thumb-offset));
-  }
-
-  &:hover::-webkit-slider-thumb {
-    background: ${tokens.colors.Company.Primary};
   }
 
   &::-moz-range-track {
-    background: transparent;
+    background: ${tokens.colors.Company.Secondary};
+    height: 4px;
+    border-radius: ${tokens.radii[1]};
   }
+
   &::-moz-range-progress {
     background: ${tokens.colors.Company.Primary};
     height: 4px;
     border-radius: ${tokens.radii[1]};
+  }
+
+  &:hover::-webkit-slider-thumb {
+    background: ${tokens.colors.Company.Primary};
   }
 
   &:hover::-moz-range-thumb {

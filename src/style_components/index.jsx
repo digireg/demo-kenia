@@ -1,8 +1,7 @@
 export { default as GlobalStyle } from "./GlobalStyle";
-export { Logo } from "./Theme";
 
 //atoms
-
+export { Logo } from "./atoms/Logo";
 export { FieldRow } from "./atoms/FieldRow";
 export { MapContainer, MapStyleContainer } from "./atoms/MapContainers";
 export { PanelHeader } from "./atoms/PanelHeader";

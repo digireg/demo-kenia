@@ -1,9 +1,12 @@
 import styled from "styled-components";
-import { tokens, components } from "../themes/light";
+import { tokens } from "../themes/light";
 
 export const TileThumbnail = styled.div`
-  height: 75px;
+  flex-shrink: 0;
   width: 100px;
-  background-color: ${tokens.colors.grays[100]};
+  height: 75px;
   border-radius: ${tokens.radii[2]};
+  background-color: ${tokens.colors.grays[100]};
+  background-size: cover;
+  background-position: center;
 `;

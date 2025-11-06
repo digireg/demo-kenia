@@ -4,6 +4,6 @@ import { tokens, components } from "../themes/light";
 export const PanelHeader = styled.header`
   display: flex;
   flex-direction: row;
-  gap: tokens.space[1];
+  gap: ${tokens.space[2]};
   align-items: center;
 `;

@@ -105,9 +105,9 @@ export default function DataLaagSelect({
   }, []);
 
   //check current state active style
-  useEffect(() => {
-    console.log("[activeStyles][current state]", activeStyles);
-  }, [activeStyles]);
+  // useEffect(() => {
+  //   console.log("[activeStyles][current state]", activeStyles);
+  // }, [activeStyles]);
 
   // Close panel on outside click
   useEffect(() => {

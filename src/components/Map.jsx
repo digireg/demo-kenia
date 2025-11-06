@@ -43,6 +43,7 @@ import {
 } from "../utils/projectionsAndTileGrids";
 import { toProjection } from "../utils/projections";
 import { flattenDataLayers } from "./flattenDataLayers";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 // ----------------------------
 // Register projections
@@ -84,6 +85,7 @@ export default function OLMap({
   // Data layers hook
   const {
     getWMSFeatureInfoUrlDebug,
+    getFeaturesFromWMTS,
     dataLayers,
     flattenedLayers,
     activeStyles,
@@ -375,6 +377,165 @@ export default function OLMap({
     // });
 
     //v8
+    // map.on("singleclick", async (evt) => {
+    //   if (!mapInstance.current) return;
+
+    //   const view = mapInstance.current.getView();
+    //   const resolution = view.getResolution();
+    //   const coordinate = evt.coordinate;
+
+    //   const allResults = []; // store features per parent layer
+
+    //   const INFO_FORMATS = [
+    //     "application/json",
+    //     "application/json; subtype=geojson",
+    //     "application/vnd.ogc.gml/3.1.1",
+    //     "application/vnd.ogc.gml",
+    //     "text/xml; subtype=gml/3.1.1",
+    //     "text/xml",
+    //     "text/plain",
+    //     "text/html",
+    //   ];
+
+    //   // ----------------------------------------
+    //   // Fetch features for a given WMS layer
+    //   // ----------------------------------------
+
+    //   const getFeaturesFromWMS = async (layer) => {
+    //     const source = wmsWmtsLayersRef.current[layer.id];
+    //     if (!source) {
+    //       console.warn(`[WMS] No source found for layer: ${layer.id}`);
+    //       toast.warning(`Layer source not found: ${layer.id}`);
+    //       return null;
+    //     }
+
+    //     for (const format of INFO_FORMATS) {
+    //       try {
+    //         const url = getWMSFeatureInfoUrlDebug(
+    //           layer,
+    //           coordinate,
+    //           resolution,
+    //           view.getProjection().getCode()
+    //         );
+    //         if (!url) continue;
+
+    //         const res = await fetch(url);
+
+    //         // If server responds with error (status >= 400)
+    //         if (!res.ok) {
+    //           toast.error(
+    //             `[WMS] Server error fetching features for layer ${layer.id}: ${res.status} ${res.statusText}`
+    //           );
+    //           console.warn(
+    //             `[WMS] GetFeatureInfo failed for layer ${layer.id}`,
+    //             res
+    //           );
+    //           return null; // exit early
+    //         }
+
+    //         const text = await res.text();
+    //         if (!text.trim()) continue;
+
+    //         if (format.includes("json") && text.trim().startsWith("{")) {
+    //           const json = JSON.parse(text);
+    //           if (json?.features?.length > 0) {
+    //             return new GeoJSON().readFeatures(json, {
+    //               featureProjection: view.getProjection(),
+    //             });
+    //           }
+    //         } else {
+    //           const parsedFeatures = new WMSGetFeatureInfo().readFeatures(
+    //             text,
+    //             {
+    //               featureProjection: view.getProjection(),
+    //             }
+    //           );
+    //           if (parsedFeatures?.length) return parsedFeatures;
+    //         }
+    //       } catch (err) {
+    //         console.warn(
+    //           `[WMS] GetFeatureInfo failed for layer ${layer.id}`,
+    //           err
+    //         );
+    //         toast.error(`[WMS] Error fetching features for layer ${layer.id}`);
+    //         continue;
+    //       }
+    //     }
+
+    //     return null;
+    //   };
+
+    //   // ----------------------------------------
+    //   // Loop only over top-level layers
+    //   // ----------------------------------------
+    //   for (const group of dataLayersRef.current) {
+    //     console.log(`[Click] Checking group: ${group.id}`);
+
+    //     // for (const parentLayer of group.children ?? []) {
+    //     //   // Skip inactive parent layers
+    //     //   if (!parentLayer.active) continue;
+
+    //     //   console.log(`[Click] Checking parent layer: ${parentLayer.id}`);
+
+    //     //   // 🔹 Only query the parent layer itself, not its children
+    //     //   const features = await getFeaturesFromWMS(parentLayer);
+    //     //   if (features?.length) {
+    //     //     allResults.push({
+    //     //       layer: parentLayer,
+    //     //       features,
+    //     //     });
+    //     //     console.log(
+    //     //       `[Click] Found ${features.length} feature(s) on parent layer: ${parentLayer.id}`
+    //     //     );
+    //     //   }
+    //     // }
+    //     for (const parentLayer of group.children ?? []) {
+    //       // Skip inactive parent layers
+    //       if (!parentLayer.active) continue;
+
+    //       console.log(`[Click] Checking parent layer: ${parentLayer.id}`);
+
+    //       let features = null;
+
+    //       // 🔹 Branch by type
+    //       if (parentLayer.type === "wms") {
+    //         features = await getFeaturesFromWMS(parentLayer);
+    //       } else if (parentLayer.type === "wmts") {
+    //         features = await getFeaturesFromWMTS(parentLayer, evt); // you'll implement this
+    //       }
+
+    //       if (features?.length) {
+    //         allResults.push({
+    //           layer: parentLayer,
+    //           features,
+    //         });
+    //         console.log(
+    //           `[Click] Found ${features.length} feature(s) on parent layer: ${parentLayer.id}`
+    //         );
+    //       }
+    //     }
+    //   }
+
+    //   // ----------------------------------------
+    //   // Update map and panel
+    //   // ----------------------------------------
+    //   clearFeatures();
+
+    //   const allFeatures = allResults.flatMap((r) => r.features);
+    //   if (allFeatures.length) addFeatures(allFeatures);
+
+    //   if (allResults.length) {
+    //     setSelectedFeature(allResults);
+    //     setActivePanel("laagdata");
+    //   } else {
+    //     console.log("[Click] No feature found on click");
+    //     // toast.info("No feature found.");
+    //     setSelectedFeature(null);
+    //     setActivePanel(null);
+    //   }
+    // });
+
+    //v9
     map.on("singleclick", async (evt) => {
       if (!mapInstance.current) return;
 
@@ -382,7 +543,7 @@ export default function OLMap({
       const resolution = view.getResolution();
       const coordinate = evt.coordinate;
 
-      const allResults = []; // store features per parent layer
+      const allResults = []; // store multiple hits here
 
       const INFO_FORMATS = [
         "application/json",
@@ -395,64 +556,12 @@ export default function OLMap({
         "text/html",
       ];
 
-      // ----------------------------------------
-      // Fetch features for a given WMS layer
-      // ----------------------------------------
-      // const getFeaturesFromWMS = async (layer) => {
-      //   const source = wmsWmtsLayersRef.current[layer.id];
-      //   if (!source) {
-      //     console.warn(`[WMS] No source found for layer: ${layer.id}`);
-      //     return null;
-      //   }
-
-      //   for (const format of INFO_FORMATS) {
-      //     try {
-      //       const url = getWMSFeatureInfoUrlDebug(
-      //         layer,
-      //         coordinate,
-      //         resolution,
-      //         view.getProjection().getCode()
-      //       );
-      //       if (!url) continue;
-
-      //       const res = await fetch(url);
-      //       const text = await res.text();
-      //       if (!text.trim()) continue;
-
-      //       if (format.includes("json") && text.trim().startsWith("{")) {
-      //         const json = JSON.parse(text);
-      //         if (json?.features?.length > 0) {
-      //           return new GeoJSON().readFeatures(json, {
-      //             featureProjection: view.getProjection(),
-      //           });
-      //         }
-      //       } else {
-      //         const parsedFeatures = new WMSGetFeatureInfo().readFeatures(
-      //           text,
-      //           {
-      //             featureProjection: view.getProjection(),
-      //           }
-      //         );
-      //         if (parsedFeatures?.length) return parsedFeatures;
-      //       }
-      //     } catch (err) {
-      //       console.warn(
-      //         `[WMS] GetFeatureInfo failed for layer ${layer.id}`,
-      //         err
-      //       );
-      //       continue;
-      //     }
-      //   }
-      //   return null;
-      // };
+      // helper to get parent title if it exists
+      const getDisplayTitle = (layer) => layer.parent?.title || layer.title;
 
       const getFeaturesFromWMS = async (layer) => {
         const source = wmsWmtsLayersRef.current[layer.id];
-        if (!source) {
-          console.warn(`[WMS] No source found for layer: ${layer.id}`);
-          toast.warning(`Layer source not found: ${layer.id}`);
-          return null;
-        }
+        if (!source) return null;
 
         for (const format of INFO_FORMATS) {
           try {
@@ -465,19 +574,6 @@ export default function OLMap({
             if (!url) continue;
 
             const res = await fetch(url);
-
-            // If server responds with error (status >= 400)
-            if (!res.ok) {
-              toast.error(
-                `[WMS] Server error fetching features for layer ${layer.id}: ${res.status} ${res.statusText}`
-              );
-              console.warn(
-                `[WMS] GetFeatureInfo failed for layer ${layer.id}`,
-                res
-              );
-              return null; // exit early
-            }
-
             const text = await res.text();
             if (!text.trim()) continue;
 
@@ -502,58 +598,76 @@ export default function OLMap({
               `[WMS] GetFeatureInfo failed for layer ${layer.id}`,
               err
             );
-            toast.error(`[WMS] Error fetching features for layer ${layer.id}`);
             continue;
           }
         }
-
         return null;
       };
 
-      // ----------------------------------------
-      // Loop only over top-level layers
-      // ----------------------------------------
+      // recursive feature collection, passing parent layer
+      const findActiveFeatures = async (layer, parent = null) => {
+        // only use parent title for display
+        const displayTitle = parent?.title || layer.title;
+
+        // only fetch features if layer.active
+        if (!layer.active) return [];
+
+        const features = await getFeaturesFromWMS(layer);
+        if (!features?.length) return [];
+
+        // return **one object**: features + displayTitle
+        return [{ layer, features, displayTitle }];
+      };
+
+      // iterate over all layer groups
       for (const group of dataLayersRef.current) {
-        console.log(`[Click] Checking group: ${group.id}`);
-
-        for (const parentLayer of group.children ?? []) {
-          // Skip inactive parent layers
-          if (!parentLayer.active) continue;
-
-          console.log(`[Click] Checking parent layer: ${parentLayer.id}`);
-
-          // 🔹 Only query the parent layer itself, not its children
-          const features = await getFeaturesFromWMS(parentLayer);
-          if (features?.length) {
-            allResults.push({
-              layer: parentLayer,
-              features,
-            });
-            console.log(
-              `[Click] Found ${features.length} feature(s) on parent layer: ${parentLayer.id}`
-            );
-          }
+        for (const layer of group.children ?? []) {
+          const results = await findActiveFeatures(layer);
+          if (results.length) allResults.push(...results);
         }
       }
 
-      // ----------------------------------------
-      // Update map and panel
-      // ----------------------------------------
+      // 🧹 Update map highlights
       clearFeatures();
-
       const allFeatures = allResults.flatMap((r) => r.features);
       if (allFeatures.length) addFeatures(allFeatures);
 
       if (allResults.length) {
+        // use displayTitle for UI panel
         setSelectedFeature(allResults);
         setActivePanel("laagdata");
       } else {
         console.log("[Click] No feature found on click");
-        // toast.info("No feature found.");
         setSelectedFeature(null);
-        setActivePanel(null);
       }
     });
+
+    const getWMSFeatureInfoUrlDebug = (
+      layer,
+      coordinate,
+      resolution,
+      projectionCode
+    ) => {
+      const source = wmsWmtsLayersRef.current[layer.id];
+      if (!source) {
+        console.warn("[DEBUG] No WMS source for layer:", layer.id);
+        return null;
+      }
+
+      const url = source.getFeatureInfoUrl(
+        coordinate,
+        resolution,
+        projectionCode,
+        {
+          INFO_FORMAT: "application/json",
+          QUERY_LAYERS: layer.wmsLayerName || layer.id,
+          FEATURE_COUNT: 10,
+        }
+      );
+
+      console.log("[DEBUG] getFeatureInfoUrl for layer:", layer.id, { url });
+      return url;
+    };
   };
 
   // ----------------------------
@@ -668,25 +782,40 @@ export default function OLMap({
   return (
     <MapContainer>
       <GlobalStyle />
+      <MapStyleContainer ref={mapRef} />
+
+      {/* Floating Map elements */}
+
       <FloatingSearch>
         <SearchBar onSearchResult={handleSearchResult} />
       </FloatingSearch>
 
-      <ZoomControl mapRef={mapInstance} />
-      <MapStyleContainer ref={mapRef} />
+      {/* hidden on tablet/laptop/desktop */}
+      {/* sidenote: figure out how to let it open overlay-menu */}
+      {/* <HamburgerMenu>
+        <NavButton
+          icon={<FiSidebar />}
+          onClick={onOpenOverlay}
+          aria-label="Open menu"
+        />
+      </HamburgerMenu> */}
 
+      <ZoomControl mapRef={mapInstance} />
+
+      <LaagData
+        isOpen={activePanel === "laagdata"}
+        setActivePanel={setActivePanel}
+        selectedFeature={selectedFeature}
+      />
+
+      <Legend activeLayers={activeLegendLayers} />
+
+      {/* menu panels */}
       <AchtergrondLaag
         isOpen={activePanel === "achtergrond"}
         setActivePanel={setActivePanel}
         activeBackgroundLayer={activeBackgroundLayer}
         setActiveBackgroundLayer={setActiveBackgroundLayer}
-      />
-
-      <TransparantieLaagSelect
-        isOpen={activePanel === "transparantie"}
-        setActivePanel={setActivePanel}
-        dataLayers={dataLayers}
-        setLayerOpacity={setLayerOpacity}
       />
 
       <DataLaagSelect
@@ -700,10 +829,11 @@ export default function OLMap({
         currentProjectionCode={currentProjectionCode}
       />
 
-      <LaagData
-        isOpen={activePanel === "laagdata"}
+      <TransparantieLaagSelect
+        isOpen={activePanel === "transparantie"}
         setActivePanel={setActivePanel}
-        selectedFeature={selectedFeature}
+        dataLayers={dataLayers}
+        setLayerOpacity={setLayerOpacity}
       />
 
       <Measurement
@@ -713,7 +843,6 @@ export default function OLMap({
       />
 
       {/* <DataLabel dataLayers={dataLayers} />*/}
-      <Legend activeLayers={activeLegendLayers} />
     </MapContainer>
   );
 }

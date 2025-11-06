@@ -111,7 +111,7 @@ export default function SearchBar({ onSearchResult }) {
 
   return (
     <SearchWrapper>
-      <form onSubmit={handleSearch}>
+      <form className="map-search-form" onSubmit={handleSearch}>
         <input
           id="MapSearchBar"
           type="search"

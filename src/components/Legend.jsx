@@ -21,7 +21,7 @@ export default function Legend({ activeLayers = [] }) {
   const totalCount = activeLayers.length;
 
   return (
-    <LegendButtonContainer>
+    <LegendButtonContainer className={isOpen ? "active" : null}>
       <MapButton
         icon={<MdLegendToggle />}
         $active={isOpen}
@@ -37,6 +37,12 @@ export default function Legend({ activeLayers = [] }) {
         id="legend-panel"
         role="region"
         aria-hidden={!isOpen}
+        style={{
+          display: isOpen ? "block" : "none",
+          opacity: isOpen ? 1 : 0,
+          transform: isOpen ? "translateY(0)" : "translateY(120%)",
+          transition: "transform 0.3s ease, opacity 0.3s ease",
+        }}
       >
         {activeLayers.length > 0 ? (
           activeLayers.map((layer) => {

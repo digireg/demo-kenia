@@ -436,3 +436,123 @@ export async function addMapLayer({
 
   return newLayer;
 }
+
+//v7
+// import TileLayer from "ol/layer/Tile";
+// import TileWMS from "ol/source/TileWMS";
+// import { zoomToLayer } from "./zoomToLayer";
+// import { createWmtsLayer } from "../utils/createWmtsLayer";
+// import { resolveLayerName } from "./wmsUtils";
+// import { fetchLayerBBoxes } from "./fetchLayerBBoxes";
+// import { DATASET_CONFIG } from "../config/datasetConfig";
+
+// /**
+//  * Add a WMS or WMTS layer to the map dynamically
+//  */
+// export async function addMapLayer({
+//   mapInstance,
+//   groupId,
+//   layerId,
+//   isActive,
+//   type = "wms",
+//   styleId = "",
+//   wmsWmtsLayersRef,
+//   projectionCode = "EPSG:3857",
+//   highlightSource,
+//   parentLayer = null,
+// }) {
+//   if (!mapInstance || !wmsWmtsLayersRef?.current) return;
+
+//   const key = styleId
+//     ? `${groupId}:${layerId}:${styleId}`
+//     : `${groupId}:${layerId}`;
+//   const dataset = DATASET_CONFIG[groupId];
+
+//   if (!dataset) {
+//     console.error(`[addMapLayer] No dataset config for groupId: ${groupId}`);
+//     return;
+//   }
+
+//   // Fetch BBoxes if configured
+//   const bboxes = await fetchLayerBBoxes(dataset, {
+//     recursiveParsing: dataset.recursiveBBoxes || false,
+//   });
+
+//   const layerNameToUse = resolveLayerName(layerId, bboxes, dataset, {
+//     verbose: true,
+//   });
+//   const bbox =
+//     bboxes[layerNameToUse] || (parentLayer && bboxes[parentLayer.wmsLayerName]);
+
+//   // Remove existing layer if present
+//   if (wmsWmtsLayersRef.current[key]) {
+//     mapInstance.removeLayer(wmsWmtsLayersRef.current[key]);
+//     delete wmsWmtsLayersRef.current[key];
+//   }
+
+//   if (!isActive) {
+//     highlightSource?.clear();
+//     return;
+//   }
+
+//   let newLayer = null;
+
+//   if (type === "wms") {
+//     // Dynamic WMS layer
+//     newLayer = new TileLayer({
+//       source: new TileWMS({
+//         url: dataset.url,
+//         params: {
+//           SERVICE: "WMS",
+//           REQUEST: "GetMap",
+//           VERSION: "1.3.0",
+//           LAYERS: layerNameToUse,
+//           STYLES: styleId || "",
+//           [projectionCode === "EPSG:4326" ? "CRS" : "SRS"]: projectionCode,
+//           FORMAT: "image/png",
+//           TRANSPARENT: true,
+//         },
+//         serverType: "geoserver",
+//         crossOrigin: "anonymous",
+//       }),
+//       zIndex: 10,
+//       opacity: 1.0,
+//     });
+//   }
+
+//   if (type === "wmts") {
+//     // Dynamic WMTS layer using createWmtsLayer util
+//     if (!dataset.url) {
+//       console.error(`[addMapLayer] WMTS dataset missing URL for ${layerId}`);
+//       return;
+//     }
+
+//     newLayer = createWmtsLayer({
+//       url: dataset.url, // from parsed capabilities
+//       layerId: layerId, // identifier from DataLayerCreateWMTS
+//       projection: mapInstance.getView().getProjection(),
+//       style: styleId || "default",
+//       opacity: 1.0,
+//       matrixSetId: dataset.matrixSet || "EPSG:28992",
+//     });
+//   }
+
+//   if (newLayer) {
+//     newLayer.set("id", layerId);
+//     newLayer.set("wmsLayerName", layerNameToUse);
+//     newLayer.set("parentLayer", parentLayer || null);
+
+//     mapInstance.addLayer(newLayer);
+//     wmsWmtsLayersRef.current[key] = newLayer;
+//     console.log(`[addMapLayer] added ${type.toUpperCase()} layer:`, key);
+//   }
+
+//   // Apply zoom to layer extent
+//   if (bbox) {
+//     zoomToLayer(mapInstance, bbox.extent, bbox.crs);
+//   } else {
+//     console.warn(`[addMapLayer] No bbox found for ${key}, layer still added`);
+//   }
+
+//   return newLayer;
+// }

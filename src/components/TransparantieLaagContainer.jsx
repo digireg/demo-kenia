@@ -6,6 +6,9 @@ import {
   TextInput,
   NoResults,
   OpacitySlider,
+  Header,
+  TitleGroup,
+  Content,
 } from "../style_components";
 import { flattenDataLayers } from "./flattenDataLayers";
 
@@ -43,31 +46,11 @@ export default function TransparantieLaagSelect({
   return (
     <TransparantieLaagContainer>
       <TransparantieLaagPanel ref={panelRef} $isOpen={isOpen}>
-        <header
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
-            justifyContent: "flex-start",
-            position: "sticky",
-            top: "0",
-            backgroundColor: "#ffffff",
-            paddingTop: "20px",
-            paddingBottom: "20px",
-            zIndex: "2",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              gap: "5px",
-              alignItems: "center",
-            }}
-          >
-            <FiEye style={{ fontSize: "20px" }} />
+        <Header>
+          <TitleGroup>
+            <FiEye size={20} />
             <h1>Layer opacity</h1>
-          </div>
+          </TitleGroup>
           <TextInput
             id="filterTransparatieLagen"
             type="text"
@@ -75,9 +58,9 @@ export default function TransparantieLaagSelect({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-        </header>
+        </Header>
 
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <Content>
           {filteredLayers.length > 0 ? (
             filteredLayers.map(({ groupId, id, label, key }) => {
               const group = dataLayers.find((g) => g.id === groupId);
@@ -100,7 +83,7 @@ export default function TransparantieLaagSelect({
           ) : (
             <NoResults>No layers found.</NoResults>
           )}
-        </div>
+        </Content>
       </TransparantieLaagPanel>
     </TransparantieLaagContainer>
   );

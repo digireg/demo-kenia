@@ -25,8 +25,13 @@ const tokens = {
     16: "64px",
     17: "68px",
     18: "72px",
+    19: "76px",
+    20: "80px",
+    21: "84px",
+    22: "88px",
+    23: "92px",
   },
-  radii: [0, "2px", "4px", "16px", "50%"],
+  radii: [0, "2px", "4px", "8px", "12px", "16px", "50%"],
   fontSizes: {
     0: 0,
     1: "10px",
@@ -56,11 +61,12 @@ const tokens = {
     cosy: "2",
   },
   breakpoints: {
-    0: "576px",
-    1: "768px",
-    2: "992px",
+    xs: "480px", // phones
+    sm: "768px", // tablets (including iPad Mini)
+    md: "1024px", // small laptops / landscape tablets
+    lg: "1280px", // desktops
+    xl: "1536px", // large desktops
   },
-
   durations: {
     0: 0,
     1: "75ms",

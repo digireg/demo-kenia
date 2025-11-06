@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { tokens } from "../themes/light";
 
 export const Panel = styled.div`
   max-height: ${({ $isOpen, $maxHeight }) =>
@@ -6,16 +7,17 @@ export const Panel = styled.div`
   height: fit-content;
   overflow-y: ${({ $isOpen }) => ($isOpen ? "auto" : "hidden")};
   background-color: white;
-  border-radius: ${({ $radius }) => $radius || "10px"};
+  border-radius: ${({ $radius }) => $radius || `${tokens.radii[4]}`};
   width: ${({ $width }) => $width || "fit-content"};
   ${"" /* max-width: ${({ $maxWidth }) => $maxWidth || "fit-content"}; */}
   min-width: ${({ $minWidth }) => $minWidth || "0"};
   display: flex;
   flex-direction: column;
-  gap: ${({ $gap }) => $gap || "20px"};
-  padding: ${({ $isOpen, $padding }) => ($isOpen ? $padding || "20px" : "0")};
+  gap: ${({ $gap }) => $gap || `${tokens.space[5]}`};
+  padding: ${({ $isOpen, $padding }) =>
+    $isOpen ? $padding || `${tokens.space[5]}` : `${tokens.space[0]}`};
   box-shadow: ${({ $isOpen, $shadow }) =>
-    $isOpen ? $shadow || "0px 4px 4px rgba(0, 0, 0, 0.25)" : "0"};
+    $isOpen ? $shadow || `${tokens.shadows[2]}` : "0"};
   ${
     "" /* transition: ${({ $transition }) =>
     $transition ||

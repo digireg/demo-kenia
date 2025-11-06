@@ -112,17 +112,16 @@ export const DATASET_CONFIG = {
   },
 
   // BGT: {
-  //   id: "BGT",
+  //   id: "bgt",
   //   title: "BGT WMTS",
-  //   type: "WMTS",
-  //   url: "https://service.pdok.nl/lv/bgt/wmts/v1_0",
-  //   layer: "BGT standaardvisualisatie",
+  //   type: "wmts",
+  //   url: "https://service.pdok.nl/lv/bgt/wmts/v1_0?",
+  //   layer: "standaard",
   //   matrixSet: "EPSG:28992",
   //   format: "image/png",
   //   style: "default",
-  //   attribution: "© PDOK",
-  //   tileGridFunc: createPdokTileGrid28992,
-  //   projectionPriority: ["EPSG:28992", "EPSG:3857"],
+  //   attribution: "© Basisregistratie Grootschalige Topografie (BGT), PDOK",
+  //   projectionPriority: ["EPSG:28992"],
   //   children: [],
   // },
 
