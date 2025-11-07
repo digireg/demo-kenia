@@ -13,7 +13,7 @@ export default function App() {
   const [activePanel, setActivePanel] = useState(null);
 
   /**
-   * State to track which background layer is active.
+   * State to track which background layer is active..
    * Default is 'openstreet' so the map shows OpenStreetMap on load.
    */
   const [activeBackgroundLayer, setActiveBackgroundLayer] =
